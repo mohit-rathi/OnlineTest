@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OnlineTest.Models;
 
-namespace OnlineTest.Data
+namespace OnlineTest.Models
 {
     public class OnlineTestContext : DbContext
     {
