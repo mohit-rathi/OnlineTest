@@ -24,7 +24,8 @@ namespace OnlineTest.Services.Services
                     Name = user.Name,
                     MobileNo = user.MobileNo,
                     Email = user.Email,
-                    Password = user.Password
+                    Password = user.Password,
+                    IsActive = user.IsActive
                 }).ToList();
                 return users;
             }
@@ -41,7 +42,8 @@ namespace OnlineTest.Services.Services
                 Name = user.Name,
                 MobileNo = user.MobileNo,
                 Email = user.Email,
-                Password = user.Password
+                Password = user.Password,
+                IsActive = user.IsActive
             });
         }
 
@@ -54,7 +56,8 @@ namespace OnlineTest.Services.Services
                 Name = user.Name,
                 MobileNo = user.MobileNo,
                 Email = user.Email,
-                Password = user.Password
+                Password = user.Password,
+                IsActive = user.IsActive
             });
         }
 
