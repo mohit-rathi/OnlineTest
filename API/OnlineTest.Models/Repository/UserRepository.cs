@@ -15,6 +15,21 @@ namespace OnlineTest.Models.Repository
         {
             return _context.Users.ToList();
         }
+        
+        public IEnumerable<User> GetUsersPaginated(int pageNumber, int pageSize)
+        {
+            return _context.Users.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+        }
+        
+        public User GetUserById(int id)
+        {
+            return _context.Users.FirstOrDefault(u => u.Id == id);
+        }
+        
+        public User GetUserByEmail(string email)
+        {
+            return _context.Users.FirstOrDefault(u => u.Email == email);
+        }
 
         public bool AddUser(User user)
         {

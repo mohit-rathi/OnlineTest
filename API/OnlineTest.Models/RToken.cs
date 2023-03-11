@@ -3,15 +3,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnlineTest.Models
 {
-    public class UserRole
+    public class RToken
     {
         [Key]
         public int Id { get; set; }
-        [ForeignKey("Role")]
-        public int RoleId { get; set; }
+        [MaxLength(32)]
+        public string RefreshToken { get; set; }
+        public bool IsStop { get; set; }
+        public DateTime CreatedDate { get; set; }
         [ForeignKey("User")]
         public int UserId { get; set; }
-        public Role Role { get; set; }
         public User User { get; set; }
     }
 }

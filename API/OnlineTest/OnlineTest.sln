@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineTest", "OnlineTest.cs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineTest.Models", "..\OnlineTest.Models\OnlineTest.Models.csproj", "{D94836DA-6008-4CEB-89A0-4796BD4AF058}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineTest.Services", "..\OnlineTest.Services\OnlineTest.Services.csproj", "{961477E4-EE67-4117-8FEB-FD5C244048F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineTest.Services", "..\OnlineTest.Services\OnlineTest.Services.csproj", "{961477E4-EE67-4117-8FEB-FD5C244048F8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
