@@ -10,6 +10,7 @@ namespace OnlineTest.Models
         [MaxLength(32)]
         public string RefreshToken { get; set; }
         public bool IsStop { get; set; }
+        [Column(TypeName = "datetime")]
         public DateTime CreatedDate { get; set; }
         [ForeignKey("User")]
         public int UserId { get; set; }

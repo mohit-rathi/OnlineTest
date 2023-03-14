@@ -16,9 +16,9 @@ namespace OnlineTest.Models.Repository
             return _context.Users.ToList();
         }
         
-        public IEnumerable<User> GetUsersPaginated(int pageNumber, int pageSize)
+        public IEnumerable<User> GetUsersPaginated(int page, int limit)
         {
-            return _context.Users.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            return _context.Users.Skip((page - 1) * limit).Take(limit).ToList();
         }
         
         public User GetUserById(int id)

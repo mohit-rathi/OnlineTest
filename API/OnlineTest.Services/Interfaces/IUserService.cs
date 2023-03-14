@@ -4,13 +4,13 @@ namespace OnlineTest.Services.Interfaces
 {
     public interface IUserService
     {
-        List<UserDTO> GetUsers();
-        List<UserDTO> GetUsersPaginated(int pageNumber, int pageSize);
-        UserDTO GetUserById(int id);
-        UserDTO GetUserByEmail(string email);
-        bool AddUser(UserDTO user);
-        bool UpdateUser(UserDTO user);
-        bool DeleteUser(int id);
-        UserDTO IsUserExists(TokenDTO user);
+        ResponseDTO GetUsers();
+        ResponseDTO GetUsersPaginated(int page, int limit);
+        ResponseDTO GetUserById(int id);
+        ResponseDTO GetUserByEmail(string email);
+        ResponseDTO AddUser(UserDTO user);
+        ResponseDTO UpdateUser(UserDTO user);
+        ResponseDTO DeleteUser(int id);
+        ResponseDTO IsUserExists(TokenDTO user);
     }
 }

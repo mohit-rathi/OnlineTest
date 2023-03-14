@@ -65,7 +65,7 @@ namespace OnlineTest.Controllers
         }
 
         [HttpPost("refresh")]
-        public IActionResult Refresh(TokenDTO user)
+        public IActionResult RefreshToken(TokenDTO user)
         {
             // data validation
             if (user == null || string.IsNullOrEmpty(user.RefreshToken))

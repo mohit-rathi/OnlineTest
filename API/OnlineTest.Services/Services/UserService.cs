@@ -14,32 +14,60 @@ namespace OnlineTest.Services.Services
             _userRepository = userRepository;
         }
 
-        public List<UserDTO> GetUsers()
+        public ResponseDTO GetUsers()
         {
-            var users = _userRepository.GetUsers().Select(user => new UserDTO
+            var response = new ResponseDTO();
+            try
             {
-                Id = user.Id,
-                Name = user.Name,
-                MobileNo = user.MobileNo,
-                Email = user.Email,
-                Password = user.Password,
-                IsActive = user.IsActive
-            }).ToList();
-            return users;
+                var users = _userRepository.GetUsers()
+                    .Select(user => new UserDTO
+                    {
+                        Id = user.Id,
+                        Name = user.Name,
+                        MobileNo = user.MobileNo,
+                        Email = user.Email,
+                        Password = user.Password,
+                        IsActive = user.IsActive
+                    }).ToList();
+                response.Status = 200;
+                response.Message = "Ok";
+                response.Data = users;
+            }
+            catch (Exception e)
+            {
+                response.Status = 500;
+                response.Message = "Internal Server Error";
+                response.Error = e.Message;
+            }
+            return response;
         }
 
-        public List<UserDTO> GetUsersPaginated(int pageNumber, int pageSize)
+        public ResponseDTO GetUsersPaginated(int page, int limit)
         {
-            var users = _userRepository.GetUsersPaginated(pageNumber, pageSize).Select(user => new UserDTO
+            var response = new ResponseDTO();
+            try
             {
-                Id = user.Id,
-                Name = user.Name,
-                MobileNo = user.MobileNo,
-                Email = user.Email,
-                Password = user.Password,
-                IsActive = user.IsActive
-            }).ToList();
-            return users;
+                var users = _userRepository.GetUsersPaginated(page, limit)
+                    .Select(user => new UserDTO
+                    {
+                        Id = user.Id,
+                        Name = user.Name,
+                        MobileNo = user.MobileNo,
+                        Email = user.Email,
+                        Password = user.Password,
+                        IsActive = user.IsActive
+                    }).ToList();
+                response.Status = 200;
+                response.Message = "Ok";
+                response.Data = users;
+            }
+            catch (Exception e)
+            {
+                response.Status = 500;
+                response.Message = "Internal Server Error";
+                response.Error = e.Message;
+            }
+            return response;
         }
 
         public UserDTO GetUserById(int id)
@@ -74,34 +102,132 @@ namespace OnlineTest.Services.Services
             };
         }
 
-        public bool AddUser(UserDTO user)
+        public ResponseDTO AddUser(UserDTO user)
         {
-            return _userRepository.AddUser(new User
+            var response = new ResponseDTO();
+            try
             {
-                Name = user.Name,
-                MobileNo = user.MobileNo,
-                Email = user.Email,
-                Password = user.Password,
-                IsActive = user.IsActive
-            });
+                var userByEmail = GetUserByEmail(user.Email);
+                if (userByEmail != null)
+                {
+                    response.Status = 400;
+                    response.Message = "Not Created";
+                    response.Error = "Email already exists";
+                    return response;
+                }
+                var result = _userRepository.AddUser(new User
+                {
+                    Name = user.Name,
+                    MobileNo = user.MobileNo,
+                    Email = user.Email,
+                    Password = user.Password,
+                    IsActive = user.IsActive
+                });
+                if (result)
+                {
+                    response.Status = 204;
+                    response.Message = "Created";
+                }
+                else
+                {
+                    response.Status = 400;
+                    response.Message = "Not Created";
+                    response.Error = "Could not add user";
+                }
+            }
+            catch (Exception e)
+            {
+                response.Status = 500;
+                response.Message = "Internal Server Error";
+                response.Error = e.Message;
+            }
+            return response;
         }
 
-        public bool UpdateUser(UserDTO user)
+        public ResponseDTO UpdateUser(UserDTO user)
         {
-            return _userRepository.UpdateUser(new User
+            var response = new ResponseDTO();
+            try
             {
-                Id = user.Id,
-                Name = user.Name,
-                MobileNo = user.MobileNo,
-                Email = user.Email,
-                Password = user.Password,
-                IsActive = user.IsActive
-            });
+                var userById = GetUserById(user.Id);
+                if (userById == null)
+                {
+                    response.Status = 404;
+                    response.Message = "Not Found";
+                    response.Error = "User not found";
+                    return response;
+                }
+                var userByEmail = GetUserByEmail(user.Email);
+                if (userByEmail != null && userByEmail.Id != user.Id)
+                {
+                    response.Status = 400;
+                    response.Message = "Not Updated";
+                    response.Error = "Email already exists";
+                    return response;
+                }
+                var result = _userRepository.UpdateUser(new User
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    MobileNo = user.MobileNo,
+                    Email = user.Email,
+                    Password = user.Password,
+                    IsActive = user.IsActive
+                });
+                if (result)
+                {
+                    response.Status = 204;
+                    response.Message = "Updated";
+                }
+                else
+                {
+                    response.Status = 400;
+                    response.Message = "Not Updated";
+                    response.Error = "Could not update user";
+                }
+            }
+            catch (Exception e)
+            {
+                response.Status = 500;
+                response.Message = "Internal Server Error";
+                response.Error = e.Message;
+            }
+            return response;
         }
 
-        public bool DeleteUser(int id)
+        public ResponseDTO DeleteUser(int id)
         {
-            return _userRepository.DeleteUser(id);
+            var response = new ResponseDTO();
+            try
+            {
+                var userById = GetUserById(id);
+                if (userById == null)
+                {
+                    response.Status = 404;
+                    response.Message = "Not Found";
+                    response.Error = "User not found";
+                    return response;
+                }
+                var result = _userRepository.DeleteUser(id);
+                if (result)
+                {
+                    response.Status = 204;
+                    response.Message = "Deleted";
+                }
+                else
+                {
+                    response.Status = 400;
+                    response.Message = "Not Deleted";
+                    response.Error = "Could not delete user";
+                }
+            }
+            catch (Exception e)
+            {
+                response.Status = 500;
+                response.Message = "Internal Server Error";
+                response.Error = e.Message;
+            }
+            return response;
         }
 
         public UserDTO IsUserExists(TokenDTO user)

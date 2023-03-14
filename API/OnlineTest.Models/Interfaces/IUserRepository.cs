@@ -3,7 +3,7 @@
     public interface IUserRepository
     {
         IEnumerable<User> GetUsers();
-        IEnumerable<User> GetUsersPaginated(int pageNumber, int pageSize);
+        IEnumerable<User> GetUsersPaginated(int page, int limit);
         User GetUserById(int id);
         User GetUserByEmail(string email);
         bool AddUser(User user);

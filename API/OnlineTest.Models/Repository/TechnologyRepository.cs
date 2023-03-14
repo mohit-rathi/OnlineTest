@@ -10,5 +10,37 @@ namespace OnlineTest.Models.Repository
         {
             _context = context;
         }
+
+        public IEnumerable<Technology> GetTechnologies()
+        {
+            return _context.Technologies.ToList();
+        }
+
+        public Technology GetTechnologyById(int id)
+        {
+            return _context.Technologies.FirstOrDefault(t => t.Id == id);
+        }
+        
+        public Technology GetTechnologyByName(string technologyName)
+        {
+            return _context.Technologies.FirstOrDefault(t => t.TechName == technologyName);
+        }
+
+        public IEnumerable<Technology> GetTechnologiesPaginated(int page, int limit)
+        {
+            return _context.Technologies.Skip((page - 1) * limit).Take(limit).ToList();
+        }
+
+        public bool AddTechnology(Technology technology)
+        {
+            _context.Add(technology);
+            return _context.SaveChanges() > 0;
+        }
+
+        public bool UpdateTechnology(Technology technology)
+        {
+            _context.Update(technology);
+            return _context.SaveChanges() > 0;
+        }
     }
 }
