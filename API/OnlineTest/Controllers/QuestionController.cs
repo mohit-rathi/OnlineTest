@@ -21,24 +21,21 @@ namespace OnlineTest.Controllers
 
         #region Methods
         [HttpGet]
-        public ActionResult<QuestionDTO> GetQuestionsByTestId(int testId)
+        public IActionResult GetQuestionsByTestId(int testId)
         {
-            List<QuestionDTO> data = _questionService.GetQuestionsByTestId(testId);
-            return Ok(data);
+            return Ok(_questionService.GetQuestionsByTestId(testId));
         }
 
         [HttpPost]
         public IActionResult AddQuestion(QuestionDTO question)
         {
-            bool result = _questionService.AddQuestion(question);
-            return Ok(result);
+            return Ok(_questionService.AddQuestion(question));
         }
 
         [HttpPut]
         public IActionResult UpdateQuestion(QuestionDTO question)
         {
-            bool result = _questionService.UpdateQuestion(question);
-            return Ok(result);
+            return Ok(_questionService.UpdateQuestion(question));
         }
         #endregion
     }

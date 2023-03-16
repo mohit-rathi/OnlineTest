@@ -1,4 +1,6 @@
 ﻿using OnlineTest.Services.DTO;
+using OnlineTest.Services.DTO.AddDTO;
+using OnlineTest.Services.DTO.UpdateDTO;
 
 namespace OnlineTest.Services.Interfaces
 {
@@ -8,7 +10,7 @@ namespace OnlineTest.Services.Interfaces
         ResponseDTO GetTechnologyById(int id);
         ResponseDTO GetTechnologyByName(string technologyName);
         ResponseDTO GetTechnologiesPaginated(int page, int limit);
-        ResponseDTO AddTechnology(TechnologyDTO technology);
-        ResponseDTO UpdateTechnology(TechnologyDTO technology);
+        ResponseDTO AddTechnology(AddTechnologyDTO technology);
+        ResponseDTO UpdateTechnology(UpdateTechnologyDTO technology);
     }
 }

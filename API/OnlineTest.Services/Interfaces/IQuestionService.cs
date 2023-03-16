@@ -4,9 +4,9 @@ namespace OnlineTest.Services.Interfaces
 {
     public interface IQuestionService
     {
-        List<QuestionDTO> GetQuestionsByTestId(int testId);
-        QuestionDTO GetQuestionById(int id);
-        bool AddQuestion(QuestionDTO question);
-        bool UpdateQuestion(QuestionDTO question);
+        ResponseDTO GetQuestionsByTestId(int testId);
+        ResponseDTO GetQuestionById(int id);
+        ResponseDTO AddQuestion(QuestionDTO question);
+        ResponseDTO UpdateQuestion(QuestionDTO question);
     }
 }

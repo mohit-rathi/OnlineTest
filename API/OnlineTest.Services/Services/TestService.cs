@@ -8,84 +8,176 @@ namespace OnlineTest.Services.Services
     public class TestService : ITestService
     {
         private readonly ITestRepository _testRepository;
+        private readonly ITechnologyRepository _technologyRepository;
 
-        public TestService(ITestRepository testRepository)
+        public TestService(ITestRepository testRepository, ITechnologyRepository technologyRepository)
         {
             _testRepository = testRepository;
+            _technologyRepository = technologyRepository;
         }
 
-        public List<TestDTO> GetTests()
+        public ResponseDTO GetTests()
         {
-            return _testRepository.GetTests()
-                .Select(t => new TestDTO
+            var response = new ResponseDTO();
+            try
+            {
+                var result = _testRepository.GetTests()
+                    .Select(t => new TestDTO
+                    {
+                        Id = t.Id,
+                        TestName = t.TestName,
+                        Description = t.Description,
+                        ExpireOn = t.ExpireOn,
+                        TechnologyId = t.TechnologyId
+                    }).ToList();
+                response.Status = 200;
+                response.Message = "Ok";
+                response.Data = result;
+            }
+            catch (Exception e)
+            {
+                response.Status = 500;
+                response.Message = "Internal Server Error";
+                response.Error = e.Message;
+            }
+            return response;
+        }
+
+        public ResponseDTO GetTestById(int id)
+        {
+            var response = new ResponseDTO();
+            try
+            {
+                var test = _testRepository.GetTestById(id);
+                if (test == null)
                 {
-                    Id = t.Id,
-                    TestName = t.TestName,
-                    Description = t.Description,
-                    CreatedBy = t.CreatedBy,
-                    CreatedTime = t.CreatedTime,
-                    ExpireOn = t.ExpireOn,
-                    TechnologyId = t.TechnologyId
-                }).ToList();
-        }
-
-        public TestDTO GetTestById(int id)
-        {
-            var result = _testRepository.GetTestById(id);
-            if (result == null)
-                return null;
-            return new TestDTO
-            {
-                Id = result.Id,
-                TestName = result.TestName,
-                Description = result.Description,
-                CreatedBy = result.CreatedBy,
-                CreatedTime = result.CreatedTime,
-                ExpireOn = result.ExpireOn,
-                TechnologyId = result.TechnologyId
-            };
-        }
-
-        public List<TestDTO> GetTestsPaginated(int page, int limit)
-        {
-            return _testRepository.GetTestsPaginated(page, limit)
-                .Select(t => new TestDTO
+                    response.Status = 404;
+                    response.Message = "Not Found";
+                    response.Error = "Test not found";
+                    return response;
+                }
+                var result = new TestDTO
                 {
-                    Id = t.Id,
-                    TestName = t.TestName,
-                    Description = t.Description,
-                    CreatedBy = t.CreatedBy,
-                    CreatedTime = t.CreatedTime,
-                    ExpireOn = t.ExpireOn,
-                    TechnologyId = t.TechnologyId
-                }).ToList();
+                    Id = test.Id,
+                    TestName = test.TestName,
+                    Description = test.Description,
+                    ExpireOn = test.ExpireOn,
+                    TechnologyId = test.TechnologyId
+                };
+                response.Status = 200;
+                response.Message = "Ok";
+                response.Data = result;
+            }
+            catch (Exception e)
+            {
+                response.Status = 500;
+                response.Message = "Internal Server Error";
+                response.Error = e.Message;
+            }
+            return response;
         }
 
-        public bool AddTest(TestDTO test)
+        public ResponseDTO GetTestsPaginated(int page, int limit)
         {
-            return _testRepository.AddTest(new Test
+            var response = new ResponseDTO();
+            try
             {
-                TestName = test.TestName,
-                Description = test.Description,
-                CreatedBy = test.CreatedBy,
-                CreatedTime = test.CreatedTime,
-                ExpireOn = test.ExpireOn,
-                TechnologyId = test.TechnologyId
-            });
+                var result = _testRepository.GetTestsPaginated(page, limit)
+                    .Select(t => new TestDTO
+                    {
+                        Id = t.Id,
+                        TestName = t.TestName,
+                        Description = t.Description,
+                        ExpireOn = t.ExpireOn,
+                        TechnologyId = t.TechnologyId
+                    }).ToList();
+                response.Status = 200;
+                response.Message = "Ok";
+                response.Data = result;
+            }
+            catch (Exception e)
+            {
+                response.Status = 500;
+                response.Message = "Internal Server Error";
+                response.Error = e.Message;
+            }
+            return response;
         }
 
-        public bool UpdateTest(TestDTO test)
+        public ResponseDTO AddTest(TestDTO test)
         {
-            return _testRepository.UpdateTest(new Test
+            var response = new ResponseDTO();
+            try
             {
-                Id = test.Id,
-                TestName = test.TestName,
-                Description = test.Description,
-                CreatedBy = test.CreatedBy,
-                CreatedTime = test.CreatedTime,
-                ExpireOn = test.ExpireOn,
-                TechnologyId = test.TechnologyId
-            });
+                var technologyById = _technologyRepository.GetTechnologyById(test.TechnologyId);
+                if (technologyById == null)
+                {
+                    response.Status = 400;
+                    response.Message = "Bad Request";
+                    response.Error = "Technology does not exist";
+                    return response;
+                }
+                var addFlag = _testRepository.AddTest(new Test
+                {
+                    TestName = test.TestName,
+                    Description = test.Description,
+                    CreatedBy = test.CreatedBy,
+                    CreatedOn = DateTime.UtcNow,
+                    ExpireOn = test.ExpireOn,
+                    TechnologyId = test.TechnologyId
+                });
+                if (addFlag)
+                {
+                    response.Status = 204;
+                    response.Message = "Created";
+                }
+                else
+                {
+                    response.Status = 400;
+                    response.Message = "Not Created";
+                    response.Error = "Could not add test";
+                }
+            }
+            catch (Exception e)
+            {
+                response.Status = 500;
+                response.Message = "Internal Server Error";
+                response.Error = e.Message;
+            }
+            return response;
+        }
+
+        public ResponseDTO UpdateTest(TestDTO test)
+        {
+            var response = new ResponseDTO();
+            try
+            {
+                var updateFlag = _testRepository.UpdateTest(new Test
+                {
+                    Id = test.Id,
+                    TestName = test.TestName,
+                    Description = test.Description,
+                    ExpireOn = test.ExpireOn
+                });
+                if (updateFlag)
+                {
+                    response.Status = 204;
+                    response.Message = "Updated";
+                }
+                else
+                {
+                    response.Status = 400;
+                    response.Message = "Not Updated";
+                    response.Error = "Could not update test";
+                }
+            }
+            catch (Exception e)
+            {
+                response.Status = 500;
+                response.Message = "Internal Server Error";
+                response.Error = e.Message;
+            }
+            return response;
         }
     }
 }

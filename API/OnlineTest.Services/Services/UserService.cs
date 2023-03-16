@@ -1,37 +1,39 @@
-﻿using OnlineTest.Models;
+﻿using AutoMapper;
+using OnlineTest.Models;
 using OnlineTest.Models.Interfaces;
 using OnlineTest.Services.DTO;
+using OnlineTest.Services.DTO.AddDTO;
+using OnlineTest.Services.DTO.GetDTO;
+using OnlineTest.Services.DTO.UpdateDTO;
 using OnlineTest.Services.Interfaces;
 
 namespace OnlineTest.Services.Services
 {
     public class UserService : IUserService
     {
+        #region Fields
+        private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
+        #endregion
 
-        public UserService(IUserRepository userRepository)
+        #region Constructor
+        public UserService(IMapper mapper, IUserRepository userRepository)
         {
+            _mapper = mapper;
             _userRepository = userRepository;
         }
+        #endregion
 
+        #region Methods
         public ResponseDTO GetUsers()
         {
             var response = new ResponseDTO();
             try
             {
-                var users = _userRepository.GetUsers()
-                    .Select(user => new UserDTO
-                    {
-                        Id = user.Id,
-                        Name = user.Name,
-                        MobileNo = user.MobileNo,
-                        Email = user.Email,
-                        Password = user.Password,
-                        IsActive = user.IsActive
-                    }).ToList();
+                var data = _mapper.Map<List<GetUserDTO>>(_userRepository.GetUsers().ToList());
                 response.Status = 200;
                 response.Message = "Ok";
-                response.Data = users;
+                response.Data = data;
             }
             catch (Exception e)
             {
@@ -47,19 +49,10 @@ namespace OnlineTest.Services.Services
             var response = new ResponseDTO();
             try
             {
-                var users = _userRepository.GetUsersPaginated(page, limit)
-                    .Select(user => new UserDTO
-                    {
-                        Id = user.Id,
-                        Name = user.Name,
-                        MobileNo = user.MobileNo,
-                        Email = user.Email,
-                        Password = user.Password,
-                        IsActive = user.IsActive
-                    }).ToList();
+                var data = _mapper.Map<List<GetUserDTO>>(_userRepository.GetUsersPaginated(page, limit).ToList());
                 response.Status = 200;
                 response.Message = "Ok";
-                response.Data = users;
+                response.Data = data;
             }
             catch (Exception e)
             {
@@ -70,44 +63,66 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
-        public UserDTO GetUserById(int id)
-        {
-            var user = _userRepository.GetUserById(id);
-            if (user == null)
-                return null;
-            return new UserDTO
-            {
-                Id = user.Id,
-                Name = user.Name,
-                MobileNo = user.MobileNo,
-                Email = user.Email,
-                Password = user.Password,
-                IsActive = user.IsActive
-            };
-        }
-
-        public UserDTO GetUserByEmail(string email)
-        {
-            var user = _userRepository.GetUserByEmail(email);
-            if (user == null)
-                return null;
-            return new UserDTO
-            {
-                Id = user.Id,
-                Name = user.Name,
-                MobileNo = user.MobileNo,
-                Email = user.Email,
-                Password = user.Password,
-                IsActive = user.IsActive
-            };
-        }
-
-        public ResponseDTO AddUser(UserDTO user)
+        public ResponseDTO GetUserById(int id)
         {
             var response = new ResponseDTO();
             try
             {
-                var userByEmail = GetUserByEmail(user.Email);
+                var user = _userRepository.GetUserById(id);
+                if (user == null)
+                {
+                    response.Status = 404;
+                    response.Message = "Not Found";
+                    response.Error = "User not found";
+                    return response;
+                }
+                var data = _mapper.Map<GetUserDTO>(user);
+                response.Status = 200;
+                response.Message = "Ok";
+                response.Data = data;
+            }
+            catch (Exception e)
+            {
+                response.Status = 500;
+                response.Message = "Internal Server Error";
+                response.Error = e.Message;
+            }
+            return response;
+        }
+
+        public ResponseDTO GetUserByEmail(string email)
+        {
+            var response = new ResponseDTO();
+            try
+            {
+                var user = _userRepository.GetUserByEmail(email);
+                if (user == null)
+                {
+                    response.Status = 404;
+                    response.Message = "Not Found";
+                    response.Error = "User not found";
+                    return response;
+                }
+                var data = _mapper.Map<GetUserDTO>(user);
+                response.Status = 200;
+                response.Message = "Ok";
+                response.Data = data;
+            }
+            catch (Exception e)
+            {
+                response.Status = 500;
+                response.Message = "Internal Server Error";
+                response.Error = e.Message;
+            }
+            return response;
+        }
+
+        public ResponseDTO AddUser(AddUserDTO user)
+        {
+            var response = new ResponseDTO();
+            try
+            {
+                var userByEmail = _userRepository.GetUserByEmail(user.Email);
                 if (userByEmail != null)
                 {
                     response.Status = 400;
@@ -115,15 +130,8 @@ namespace OnlineTest.Services.Services
                     response.Error = "Email already exists";
                     return response;
                 }
-                var result = _userRepository.AddUser(new User
-                {
-                    Name = user.Name,
-                    MobileNo = user.MobileNo,
-                    Email = user.Email,
-                    Password = user.Password,
-                    IsActive = user.IsActive
-                });
-                if (result)
+                var addFlag = _userRepository.AddUser(_mapper.Map<User>(user));
+                if (addFlag)
                 {
                     response.Status = 204;
                     response.Message = "Created";
@@ -144,12 +152,12 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
-        public ResponseDTO UpdateUser(UserDTO user)
+        public ResponseDTO UpdateUser(UpdateUserDTO user)
         {
             var response = new ResponseDTO();
             try
             {
-                var userById = GetUserById(user.Id);
+                var userById = _userRepository.GetUserById(user.Id);
                 if (userById == null)
                 {
                     response.Status = 404;
@@ -157,7 +165,7 @@ namespace OnlineTest.Services.Services
                     response.Error = "User not found";
                     return response;
                 }
-                var userByEmail = GetUserByEmail(user.Email);
+                var userByEmail = _userRepository.GetUserByEmail(user.Email);
                 if (userByEmail != null && userByEmail.Id != user.Id)
                 {
                     response.Status = 400;
@@ -165,16 +173,8 @@ namespace OnlineTest.Services.Services
                     response.Error = "Email already exists";
                     return response;
                 }
-                var result = _userRepository.UpdateUser(new User
-                {
-                    Id = user.Id,
-                    Name = user.Name,
-                    MobileNo = user.MobileNo,
-                    Email = user.Email,
-                    Password = user.Password,
-                    IsActive = user.IsActive
-                });
-                if (result)
+                var updateFlag = _userRepository.UpdateUser(_mapper.Map<User>(user));
+                if (updateFlag)
                 {
                     response.Status = 204;
                     response.Message = "Updated";
@@ -208,8 +208,8 @@ namespace OnlineTest.Services.Services
                     response.Error = "User not found";
                     return response;
                 }
-                var result = _userRepository.DeleteUser(id);
-                if (result)
+                var deleteFlag = _userRepository.DeleteUser(id);
+                if (deleteFlag)
                 {
                     response.Status = 204;
                     response.Message = "Deleted";
@@ -230,20 +230,13 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
-        public UserDTO IsUserExists(TokenDTO user)
+        public GetUserDTO IsUserExists(TokenDTO user)
         {
             var result = _userRepository.GetUserByEmail(user.Email);
             if (result == null || result.Password != user.Password)
                 return null;
-            return new UserDTO
-            {
-                Id = result.Id,
-                Name = result.Name,
-                MobileNo = result.MobileNo,
-                Email = result.Email,
-                Password = result.Password,
-                IsActive = result.IsActive
-            };
+            return _mapper.Map<GetUserDTO>(result);
         }
+        #endregion
     }
 }

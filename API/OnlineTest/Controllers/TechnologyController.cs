@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using OnlineTest.Services.DTO;
+using OnlineTest.Services.DTO.AddDTO;
+using OnlineTest.Services.DTO.UpdateDTO;
 using OnlineTest.Services.Interfaces;
 
 namespace OnlineTest.Controllers
@@ -27,13 +28,13 @@ namespace OnlineTest.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddTechnology(TechnologyDTO technology)
+        public IActionResult AddTechnology(AddTechnologyDTO technology)
         {
             return Ok(_technologyService.AddTechnology(technology));
         }
 
         [HttpPut]
-        public IActionResult UpdateTechnology(TechnologyDTO technology)
+        public IActionResult UpdateTechnology(UpdateTechnologyDTO technology)
         {
             return Ok(_technologyService.UpdateTechnology(technology));
         }

@@ -1,4 +1,7 @@
 ﻿using OnlineTest.Services.DTO;
+using OnlineTest.Services.DTO.AddDTO;
+using OnlineTest.Services.DTO.GetDTO;
+using OnlineTest.Services.DTO.UpdateDTO;
 
 namespace OnlineTest.Services.Interfaces
 {
@@ -8,9 +11,9 @@ namespace OnlineTest.Services.Interfaces
         ResponseDTO GetUsersPaginated(int page, int limit);
         ResponseDTO GetUserById(int id);
         ResponseDTO GetUserByEmail(string email);
-        ResponseDTO AddUser(UserDTO user);
-        ResponseDTO UpdateUser(UserDTO user);
+        ResponseDTO AddUser(AddUserDTO user);
+        ResponseDTO UpdateUser(UpdateUserDTO user);
         ResponseDTO DeleteUser(int id);
-        ResponseDTO IsUserExists(TokenDTO user);
+        GetUserDTO IsUserExists(TokenDTO user);
     }
 }

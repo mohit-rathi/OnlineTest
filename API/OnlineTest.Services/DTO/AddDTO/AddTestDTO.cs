@@ -1,12 +1,10 @@
-﻿namespace OnlineTest.Services.DTO
+﻿namespace OnlineTest.Services.DTO.AddDTO
 {
-    public class TestDTO
+    public class AddTestDTO
     {
-        public int Id { get; set; }
         public string TestName { get; set; }
         public string Description { get; set; }
         public int CreatedBy { get; set; }
-        public DateTime CreatedOn { get; set; }
         public DateTime? ExpireOn { get; set; }
         public int TechnologyId { get; set; }
     }

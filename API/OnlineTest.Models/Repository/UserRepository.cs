@@ -39,7 +39,11 @@ namespace OnlineTest.Models.Repository
 
         public bool UpdateUser(User user)
         {
-            _context.Update(user);
+            _context.Entry(user).Property("Name").IsModified = true;
+            _context.Entry(user).Property("MobileNo").IsModified = true;
+            _context.Entry(user).Property("Email").IsModified = true;
+            _context.Entry(user).Property("Password").IsModified = true;
+            _context.Entry(user).Property("IsActive").IsModified = true;
             return _context.SaveChanges() > 0;
         }
 

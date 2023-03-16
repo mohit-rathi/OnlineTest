@@ -34,7 +34,9 @@ namespace OnlineTest.Models.Repository
 
         public bool UpdateTest(Test test)
         {
-            _context.Update(test);
+            _context.Entry(test).Property("TestName").IsModified = true;
+            _context.Entry(test).Property("Description").IsModified = true;
+            _context.Entry(test).Property("ExpireOn").IsModified = true;
             return _context.SaveChanges() > 0;
         }
     }

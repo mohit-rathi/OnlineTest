@@ -21,28 +21,21 @@ namespace OnlineTest.Controllers
 
         #region Methods
         [HttpGet]
-        public ActionResult<TestDTO> GetTests(int? page, int? limit)
+        public IActionResult GetTests(int page, int limit)
         {
-            List<TestDTO> data;
-            if (page.HasValue && limit.HasValue)
-                data = _testService.GetTestsPaginated(page.Value, limit.Value);
-            else
-                data = _testService.GetTests();
-            return Ok(data);
+            return Ok(_testService.GetTestsPaginated(page, limit));
         }
 
         [HttpPost]
         public IActionResult AddTest(TestDTO test)
         {
-            bool result = _testService.AddTest(test);
-            return Ok(result);
+            return Ok(_testService.AddTest(test));
         }
 
         [HttpPut]
         public IActionResult UpdateTest(TestDTO test)
         {
-            bool result = _testService.UpdateTest(test);
-            return Ok(result);
+            return Ok(_testService.UpdateTest(test));
         }
         #endregion
     }

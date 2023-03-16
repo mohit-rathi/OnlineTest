@@ -1,36 +1,39 @@
-﻿using OnlineTest.Models;
+﻿using AutoMapper;
+using OnlineTest.Models;
 using OnlineTest.Models.Interfaces;
 using OnlineTest.Services.DTO;
+using OnlineTest.Services.DTO.AddDTO;
+using OnlineTest.Services.DTO.GetDTO;
+using OnlineTest.Services.DTO.UpdateDTO;
 using OnlineTest.Services.Interfaces;
 
 namespace OnlineTest.Services.Services
 {
     public class TechnologyService : ITechnologyService
     {
+        #region Fields
+        private readonly IMapper _mapper;
         private readonly ITechnologyRepository _technologyRepository;
+        #endregion
 
-        public TechnologyService(ITechnologyRepository technologyRepository)
+        #region Constructor
+        public TechnologyService(IMapper mapper, ITechnologyRepository technologyRepository)
         {
+            _mapper = mapper;
             _technologyRepository = technologyRepository;
         }
+        #endregion
 
+        #region Methods
         public ResponseDTO GetTechnologies()
         {
             var response = new ResponseDTO();
             try
             {
-                var result = _technologyRepository.GetTechnologies().Select(t => new TechnologyDTO
-                {
-                    Id = t.Id,
-                    TechName = t.TechName,
-                    CreatedBy = t.CreatedBy,
-                    CreatedOn = t.CreatedOn,
-                    ModifiedBy = t.ModifiedBy,
-                    ModifiedOn = t.ModifiedOn
-                }).ToList();
+                var data = _mapper.Map<List<GetTechnologyDTO>>(_technologyRepository.GetTechnologies().ToList());
                 response.Status = 200;
                 response.Message = "Ok";
-                response.Data = result;
+                response.Data = data;
             }
             catch (Exception e)
             {
@@ -54,18 +57,10 @@ namespace OnlineTest.Services.Services
                     response.Error = "Technology not found";
                     return response;
                 }
-                var technology = new TechnologyDTO
-                {
-                    Id = result.Id,
-                    TechName = result.TechName,
-                    CreatedBy = result.CreatedBy,
-                    CreatedOn = result.CreatedOn,
-                    ModifiedBy = result.ModifiedBy,
-                    ModifiedOn = result.ModifiedOn
-                };
+                var data = _mapper.Map<GetTechnologyDTO>(result);
                 response.Status = 200;
                 response.Message = "Ok";
-                response.Data = technology;
+                response.Data = data;
             }
             catch (Exception e)
             {
@@ -89,18 +84,10 @@ namespace OnlineTest.Services.Services
                     response.Error = "Technology not found";
                     return response;
                 }
-                var technology = new TechnologyDTO
-                {
-                    Id = result.Id,
-                    TechName = result.TechName,
-                    CreatedBy = result.CreatedBy,
-                    CreatedOn = result.CreatedOn,
-                    ModifiedBy = result.ModifiedBy,
-                    ModifiedOn = result.ModifiedOn
-                };
+                var data = _mapper.Map<GetTechnologyDTO>(result);
                 response.Status = 200;
                 response.Message = "Ok";
-                response.Data = technology;
+                response.Data = data;
             }
             catch (Exception e)
             {
@@ -116,19 +103,10 @@ namespace OnlineTest.Services.Services
             var response = new ResponseDTO();
             try
             {
-                var result = _technologyRepository.GetTechnologiesPaginated(page, limit)
-                    .Select(t => new TechnologyDTO
-                    {
-                        Id = t.Id,
-                        TechName = t.TechName,
-                        CreatedBy = t.CreatedBy,
-                        CreatedOn = t.CreatedOn,
-                        ModifiedBy = t.ModifiedBy,
-                        ModifiedOn = t.ModifiedOn
-                    }).ToList();
+                var data = _mapper.Map<List<GetTechnologyDTO>>(_technologyRepository.GetTechnologiesPaginated(page, limit).ToList());
                 response.Status = 200;
                 response.Message = "Ok";
-                response.Data = result;
+                response.Data = data;
             }
             catch (Exception e)
             {
@@ -139,7 +117,7 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
-        public ResponseDTO AddTechnology(TechnologyDTO technology)
+        public ResponseDTO AddTechnology(AddTechnologyDTO technology)
         {
             var response = new ResponseDTO();
             try
@@ -152,12 +130,7 @@ namespace OnlineTest.Services.Services
                     response.Error = "Technology already exists";
                     return response;
                 }
-                var addFlag = _technologyRepository.AddTechnology(new Technology
-                {
-                    TechName = technology.TechName,
-                    CreatedBy = technology.CreatedBy,
-                    CreatedOn = DateTime.UtcNow
-                });
+                var addFlag = _technologyRepository.AddTechnology(_mapper.Map<Technology>(technology));
                 if (addFlag)
                 {
                     response.Status = 204;
@@ -179,7 +152,7 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
-        public ResponseDTO UpdateTechnology(TechnologyDTO technology)
+        public ResponseDTO UpdateTechnology(UpdateTechnologyDTO technology)
         {
             var response = new ResponseDTO();
             try
@@ -200,13 +173,7 @@ namespace OnlineTest.Services.Services
                     response.Error = "Technology already exists";
                     return response;
                 }
-                var updateFlag = _technologyRepository.UpdateTechnology(new Technology
-                {
-                    Id = technology.Id,
-                    TechName = technology.TechName,
-                    ModifiedBy = technology.ModifiedBy,
-                    ModifiedOn = DateTime.UtcNow
-                });
+                var updateFlag = _technologyRepository.UpdateTechnology(_mapper.Map<Technology>(technology));
                 if (updateFlag)
                 {
                     response.Status = 204;
@@ -227,5 +194,6 @@ namespace OnlineTest.Services.Services
             }
             return response;
         }
+        #endregion
     }
 }

@@ -9,15 +9,13 @@ namespace OnlineTest.Models
         public int Id { get; set; }
         public string TestName { get; set; }
         public string Description { get; set; }
-        [ForeignKey("User")]
+        [Column(TypeName = "datetime")]
+        public DateTime? ExpireOn { get; set; }
+        public int TechnologyId { get; set; }
         public int CreatedBy { get; set; }
         [Column(TypeName = "datetime")]
-        public DateTime CreatedTime { get; set; }
-        [Column(TypeName = "datetime")]
-        public DateTime ExpireOn { get; set; }
+        public DateTime CreatedOn { get; set; }
         [ForeignKey("Technology")]
-        public int TechnologyId { get; set; }
-        public User User { get; set; }
         public Technology Technology { get; set; }
     }
 }

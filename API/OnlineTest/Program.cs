@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using OnlineTest.Models;
 using OnlineTest.Models.Interfaces;
 using OnlineTest.Models.Repository;
+using OnlineTest.Services.AutoMapperProfile;
 using OnlineTest.Services.Interfaces;
 using OnlineTest.Services.Services;
 
@@ -46,6 +47,8 @@ builder.Services.AddSwaggerGen(option =>
         }
     });
 });
+
+builder.Services.AddAutoMapper(typeof(MapperProfile));
 
 builder.Services.AddDbContext<OnlineTestContext>(options =>
 {

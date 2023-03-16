@@ -31,7 +31,11 @@ namespace OnlineTest.Models.Repository
 
         public bool UpdateQuestion(Question question)
         {
-            _context.Update(question);
+            _context.Entry(question).Property("QuestionName").IsModified = true;
+            _context.Entry(question).Property("Que").IsModified = true;
+            _context.Entry(question).Property("Weightage").IsModified = true;
+            _context.Entry(question).Property("SortOrder").IsModified = true;
+            _context.Entry(question).Property("IsActive").IsModified = true;
             return _context.SaveChanges() > 0;
         }
     }
