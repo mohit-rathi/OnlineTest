@@ -12,5 +12,6 @@ namespace OnlineTest.Services.Interfaces
         ResponseDTO GetTechnologiesPaginated(int page, int limit);
         ResponseDTO AddTechnology(AddTechnologyDTO technology);
         ResponseDTO UpdateTechnology(UpdateTechnologyDTO technology);
+        ResponseDTO DeleteTechnology(int id);
     }
 }

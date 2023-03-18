@@ -14,13 +14,15 @@ namespace OnlineTest.Services.Services
         #region Fields
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
+        private readonly IHasherService _hasherService;
         #endregion
 
         #region Constructor
-        public UserService(IMapper mapper, IUserRepository userRepository)
+        public UserService(IMapper mapper, IUserRepository userRepository, IHasherService hasherService)
         {
             _mapper = mapper;
             _userRepository = userRepository;
+            _hasherService = hasherService;
         }
         #endregion
 
@@ -130,6 +132,7 @@ namespace OnlineTest.Services.Services
                     response.Error = "Email already exists";
                     return response;
                 }
+                user.Password = _hasherService.Hash(user.Password);
                 var addFlag = _userRepository.AddUser(_mapper.Map<User>(user));
                 if (addFlag)
                 {
@@ -200,7 +203,7 @@ namespace OnlineTest.Services.Services
             var response = new ResponseDTO();
             try
             {
-                var userById = GetUserById(id);
+                var userById = _userRepository.GetUserById(id);
                 if (userById == null)
                 {
                     response.Status = 404;
@@ -208,7 +211,8 @@ namespace OnlineTest.Services.Services
                     response.Error = "User not found";
                     return response;
                 }
-                var deleteFlag = _userRepository.DeleteUser(id);
+                userById.IsActive = false;
+                var deleteFlag = _userRepository.DeleteUser(userById);
                 if (deleteFlag)
                 {
                     response.Status = 204;
@@ -233,7 +237,7 @@ namespace OnlineTest.Services.Services
         public GetUserDTO IsUserExists(TokenDTO user)
         {
             var result = _userRepository.GetUserByEmail(user.Email);
-            if (result == null || result.Password != user.Password)
+            if (result == null || result.Password != _hasherService.Hash(user.Password))
                 return null;
             return _mapper.Map<GetUserDTO>(result);
         }

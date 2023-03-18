@@ -4,13 +4,18 @@ namespace OnlineTest.Models.Repository
 {
     public class RTokenRepository : IRTokenRepository
     {
+        #region Fields
         private readonly OnlineTestContext _context;
+        #endregion
 
+        #region Constructor
         public RTokenRepository(OnlineTestContext context)
         {
             _context = context;
         }
+        #endregion
 
+        #region Methods
         public bool AddRefreshToken(RToken token)
         {
             _context.RTokens.Add(token);
@@ -27,5 +32,6 @@ namespace OnlineTest.Models.Repository
         {
             return _context.RTokens.FirstOrDefault(x => x.RefreshToken == refreshToken);
         }
+        #endregion
     }
 }

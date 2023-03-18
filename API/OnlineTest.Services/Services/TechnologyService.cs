@@ -194,6 +194,42 @@ namespace OnlineTest.Services.Services
             }
             return response;
         }
+
+        public ResponseDTO DeleteTechnology(int id)
+        {
+            var response = new ResponseDTO();
+            try
+            {
+                var technologyById = _technologyRepository.GetTechnologyById(id);
+                if (technologyById == null)
+                {
+                    response.Status = 400;
+                    response.Message = "Not Deleted";
+                    response.Error = "Technology does not exist";
+                    return response;
+                }
+                technologyById.IsActive = false;
+                var deleteFlag = _technologyRepository.DeleteTechnology(_mapper.Map<Technology>(technologyById));
+                if (deleteFlag)
+                {
+                    response.Status = 204;
+                    response.Message = "Deleted";
+                }
+                else
+                {
+                    response.Status = 400;
+                    response.Message = "Not Deleted";
+                    response.Error = "Could not delete technology";
+                }
+            }
+            catch (Exception e)
+            {
+                response.Status = 500;
+                response.Message = "Internal Server Error";
+                response.Error = e.Message;
+            }
+            return response;
+        }
         #endregion
     }
 }

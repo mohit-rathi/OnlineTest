@@ -11,11 +11,12 @@ namespace OnlineTest.Models
         public string Description { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? ExpireOn { get; set; }
+        [ForeignKey("Technology")]
         public int TechnologyId { get; set; }
+        public bool IsActive { get; set; }
         public int CreatedBy { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime CreatedOn { get; set; }
-        [ForeignKey("Technology")]
         public Technology Technology { get; set; }
     }
 }

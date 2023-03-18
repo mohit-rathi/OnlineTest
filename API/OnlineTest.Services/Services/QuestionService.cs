@@ -1,40 +1,41 @@
-﻿using OnlineTest.Models;
+﻿using AutoMapper;
+using OnlineTest.Models;
 using OnlineTest.Models.Interfaces;
 using OnlineTest.Services.DTO;
+using OnlineTest.Services.DTO.AddDTO;
+using OnlineTest.Services.DTO.GetDTO;
+using OnlineTest.Services.DTO.UpdateDTO;
 using OnlineTest.Services.Interfaces;
 
 namespace OnlineTest.Services.Services
 {
     public class QuestionService : IQuestionService
     {
+        #region Fields
+        private readonly IMapper _mapper;
         private readonly IQuestionRepository _questionRepository;
         private readonly ITestRepository _testRepository;
+        #endregion
 
-        public QuestionService(IQuestionRepository questionRepository, ITestRepository testRepository)
+        #region Constructor
+        public QuestionService(IMapper mapper, IQuestionRepository questionRepository, ITestRepository testRepository)
         {
+            _mapper = mapper;
             _questionRepository = questionRepository;
             _testRepository = testRepository;
         }
+        #endregion
 
+        #region Methods
         public ResponseDTO GetQuestionsByTestId(int testId)
         {
             var response = new ResponseDTO();
             try
             {
-                var result = _questionRepository.GetQuestionsByTestId(testId)
-                    .Select(q => new QuestionDTO
-                    {
-                        Id = q.Id,
-                        QuestionName = q.QuestionName,
-                        Que = q.Que,
-                        Type = q.Type,
-                        Weightage = q.Weightage,
-                        SortOrder = q.SortOrder,
-                        TestId = q.TestId
-                    }).ToList();
+                var data = _mapper.Map<List<GetQuestionDTO>>(_questionRepository.GetQuestionsByTestId(testId).ToList());
                 response.Status = 200;
                 response.Message = "Ok";
-                response.Data = result;
+                response.Data = data;
             }
             catch (Exception e)
             {
@@ -58,19 +59,10 @@ namespace OnlineTest.Services.Services
                     response.Error = "Question not found";
                     return response;
                 }
-                var result = new QuestionDTO
-                {
-                    Id = test.Id,
-                    QuestionName = test.QuestionName,
-                    Que = test.Que,
-                    Type = test.Type,
-                    Weightage = test.Weightage,
-                    SortOrder = test.SortOrder,
-                    TestId = test.TestId
-                };
+                var data = _mapper.Map<GetQuestionDTO>(test);
                 response.Status = 200;
                 response.Message = "Ok";
-                response.Data = result;
+                response.Data = data;
             }
             catch (Exception e)
             {
@@ -81,7 +73,7 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
-        public ResponseDTO AddQuestion(QuestionDTO question)
+        public ResponseDTO AddQuestion(AddQuestionDTO question)
         {
             var response = new ResponseDTO();
             try
@@ -94,18 +86,7 @@ namespace OnlineTest.Services.Services
                     response.Error = "Test does not exist";
                     return response;
                 }
-                var addFlag = _questionRepository.AddQuestion(new Question
-                {
-                    QuestionName = question.QuestionName,
-                    Que = question.Que,
-                    Type = question.Type,
-                    Weightage = question.Weightage,
-                    SortOrder = question.SortOrder,
-                    IsActive = true,
-                    TestId = question.TestId,
-                    CreatedBy = question.CreatedBy,
-                    CreatedOn = DateTime.UtcNow
-                });
+                var addFlag = _questionRepository.AddQuestion(_mapper.Map<Question>(question));
                 if (addFlag)
                 {
                     response.Status = 204;
@@ -127,20 +108,20 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
-        public ResponseDTO UpdateQuestion(QuestionDTO question)
+        public ResponseDTO UpdateQuestion(UpdateQuestionDTO question)
         {
             var response = new ResponseDTO();
             try
             {
-                var updateFlag = _questionRepository.UpdateQuestion(new Question
+                var questionById = _questionRepository.GetQuestionById(question.Id);
+                if (questionById == null)
                 {
-                    Id = question.Id,
-                    QuestionName = question.QuestionName,
-                    Que = question.Que,
-                    Weightage = question.Weightage,
-                    SortOrder = question.SortOrder,
-                    IsActive = question.IsActive
-                });
+                    response.Status = 404;
+                    response.Message = "Not Found";
+                    response.Error = "Question not found";
+                    return response;
+                }
+                var updateFlag = _questionRepository.UpdateQuestion(_mapper.Map<Question>(question));
                 if (updateFlag)
                 {
                     response.Status = 204;
@@ -161,5 +142,42 @@ namespace OnlineTest.Services.Services
             }
             return response;
         }
+
+        public ResponseDTO DeleteQuestion(int id)
+        {
+            var response = new ResponseDTO();
+            try
+            {
+                var questionById = _questionRepository.GetQuestionById(id);
+                if (questionById == null)
+                {
+                    response.Status = 404;
+                    response.Message = "Not Found";
+                    response.Error = "Question not found";
+                    return response;
+                }
+                questionById.IsActive = false;
+                var deleteFlag = _questionRepository.DeleteQuestion(_mapper.Map<Question>(questionById));
+                if (deleteFlag)
+                {
+                    response.Status = 204;
+                    response.Message = "Deleted";
+                }
+                else
+                {
+                    response.Status = 400;
+                    response.Message = "Not Deleted";
+                    response.Error = "Could not delete question";
+                }
+            }
+            catch (Exception e)
+            {
+                response.Status = 500;
+                response.Message = "Internal Server Error";
+                response.Error = e.Message;
+            }
+            return response;
+        }
+        #endregion
     }
 }

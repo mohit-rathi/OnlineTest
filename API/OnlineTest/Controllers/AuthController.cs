@@ -51,7 +51,7 @@ namespace OnlineTest.Controllers
             {
                 RefreshToken = refreshToken,
                 IsStop = false,
-                CreatedDate = DateTime.UtcNow,
+                CreatedOn = DateTime.UtcNow,
                 UserId = result.Id
             };
             if (!_rTokenService.AddRefreshToken(rToken))
@@ -92,7 +92,7 @@ namespace OnlineTest.Controllers
             {
                 RefreshToken = refreshToken,
                 IsStop = false,
-                CreatedDate = DateTime.UtcNow,
+                CreatedOn = DateTime.UtcNow,
                 UserId = rTokenOld.UserId
             };
             bool addFlag = _rTokenService.AddRefreshToken(rTokenNew);

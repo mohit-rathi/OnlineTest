@@ -8,5 +8,6 @@
         IEnumerable<Technology> GetTechnologiesPaginated(int page, int limit);
         bool AddTechnology(Technology technology);
         bool UpdateTechnology(Technology technology);
+        bool DeleteTechnology(Technology technology);
     }
 }

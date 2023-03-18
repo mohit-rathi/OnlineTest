@@ -20,7 +20,7 @@ namespace OnlineTest.Services.Services
             {
                 RefreshToken = token.RefreshToken,
                 IsStop = token.IsStop,
-                CreatedDate = token.CreatedDate,
+                CreatedOn = token.CreatedOn,
                 UserId = token.UserId
             });
         }
@@ -31,7 +31,7 @@ namespace OnlineTest.Services.Services
             {
                 RefreshToken = token.RefreshToken,
                 IsStop = token.IsStop,
-                CreatedDate = token.CreatedDate,
+                CreatedOn = token.CreatedOn,
                 UserId = token.UserId
             });
         }
@@ -45,7 +45,7 @@ namespace OnlineTest.Services.Services
             {
                 RefreshToken = result.RefreshToken,
                 IsStop = result.IsStop,
-                CreatedDate = result.CreatedDate,
+                CreatedOn = result.CreatedOn,
                 UserId = result.UserId
             };
         }

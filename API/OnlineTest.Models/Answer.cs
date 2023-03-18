@@ -3,17 +3,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OnlineTest.Models
 {
-    public class RToken
+    public class Answer
     {
         [Key]
         public int Id { get; set; }
-        [MaxLength(32)]
-        public string RefreshToken { get; set; }
-        public bool IsStop { get; set; }
+        public string Ans { get; set; }
+        public bool IsActive { get; set; }
+        public int CreatedBy { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime CreatedOn { get; set; }
-        [ForeignKey("User")]
-        public int UserId { get; set; }
-        public User User { get; set; }
     }
 }

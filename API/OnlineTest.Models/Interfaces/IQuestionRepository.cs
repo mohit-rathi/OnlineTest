@@ -6,5 +6,6 @@
         Question GetQuestionById(int id);
         bool AddQuestion(Question question);
         bool UpdateQuestion(Question question);
+        bool DeleteQuestion(Question question);
     }
 }

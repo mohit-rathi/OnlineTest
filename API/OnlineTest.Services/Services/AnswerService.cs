@@ -9,30 +9,28 @@ using OnlineTest.Services.Interfaces;
 
 namespace OnlineTest.Services.Services
 {
-    public class TestService : ITestService
+    public class AnswerService : IAnswerService
     {
         #region Fields
         private readonly IMapper _mapper;
-        private readonly ITestRepository _testRepository;
-        private readonly ITechnologyRepository _technologyRepository;
+        private readonly IAnswerRepository _answerRepository;
         #endregion
 
         #region Constructor
-        public TestService(IMapper mapper, ITestRepository testRepository, ITechnologyRepository technologyRepository)
+        public AnswerService(IMapper mapper, IAnswerRepository answerRepository)
         {
             _mapper = mapper;
-            _testRepository = testRepository;
-            _technologyRepository = technologyRepository;
+            _answerRepository = answerRepository;
         }
         #endregion
 
         #region Methods
-        public ResponseDTO GetTests()
+        public ResponseDTO GetAnswers()
         {
             var response = new ResponseDTO();
             try
             {
-                var data = _mapper.Map<List<GetTestDTO>>(_testRepository.GetTests().ToList());
+                var data = _mapper.Map<List<GetAnswerDTO>>(_answerRepository.GetAnswers().ToList());
                 response.Status = 200;
                 response.Message = "Ok";
                 response.Data = data;
@@ -46,20 +44,12 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
-        public ResponseDTO GetTestById(int id)
+        public ResponseDTO GetAnswerById(int id)
         {
             var response = new ResponseDTO();
             try
             {
-                var test = _testRepository.GetTestById(id);
-                if (test == null)
-                {
-                    response.Status = 404;
-                    response.Message = "Not Found";
-                    response.Error = "Test not found";
-                    return response;
-                }
-                var data = _mapper.Map<GetTestDTO>(test);
+                var data = _mapper.Map<GetAnswerDTO>(_answerRepository.GetAnswerById(id));
                 response.Status = 200;
                 response.Message = "Ok";
                 response.Data = data;
@@ -73,39 +63,12 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
-        public ResponseDTO GetTestsPaginated(int page, int limit)
+        public ResponseDTO AddAnswer(AddAnswerDTO answer)
         {
             var response = new ResponseDTO();
             try
             {
-                var data = _mapper.Map<List<GetTestDTO>>(_testRepository.GetTestsPaginated(page, limit).ToList());
-                response.Status = 200;
-                response.Message = "Ok";
-                response.Data = data;
-            }
-            catch (Exception e)
-            {
-                response.Status = 500;
-                response.Message = "Internal Server Error";
-                response.Error = e.Message;
-            }
-            return response;
-        }
-
-        public ResponseDTO AddTest(AddTestDTO test)
-        {
-            var response = new ResponseDTO();
-            try
-            {
-                var technologyById = _technologyRepository.GetTechnologyById(test.TechnologyId);
-                if (technologyById == null)
-                {
-                    response.Status = 400;
-                    response.Message = "Bad Request";
-                    response.Error = "Technology does not exist";
-                    return response;
-                }
-                var addFlag = _testRepository.AddTest(_mapper.Map<Test>(test));
+                var addFlag = _answerRepository.AddAnswer(_mapper.Map<Answer>(answer));
                 if (addFlag)
                 {
                     response.Status = 204;
@@ -115,7 +78,7 @@ namespace OnlineTest.Services.Services
                 {
                     response.Status = 400;
                     response.Message = "Not Created";
-                    response.Error = "Could not add test";
+                    response.Error = "Could not add answer";
                 }
             }
             catch (Exception e)
@@ -127,20 +90,20 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
-        public ResponseDTO UpdateTest(UpdateTestDTO test)
+        public ResponseDTO UpdateAnswer(UpdateAnswerDTO answer)
         {
             var response = new ResponseDTO();
             try
             {
-                var testById = _testRepository.GetTestById(test.Id);
-                if (testById == null)
+                var answerById = _answerRepository.GetAnswerById(answer.Id);
+                if (answerById == null)
                 {
                     response.Status = 404;
                     response.Message = "Not Found";
-                    response.Error = "Test does not exist";
+                    response.Error = "Answer not found";
                     return response;
                 }
-                var updateFlag = _testRepository.UpdateTest(_mapper.Map<Test>(test));
+                var updateFlag = _answerRepository.UpdateAnswer(_mapper.Map<Answer>(answer));
                 if (updateFlag)
                 {
                     response.Status = 204;
@@ -150,7 +113,7 @@ namespace OnlineTest.Services.Services
                 {
                     response.Status = 400;
                     response.Message = "Not Updated";
-                    response.Error = "Could not update test";
+                    response.Error = "Could not update answer";
                 }
             }
             catch (Exception e)
@@ -162,21 +125,21 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
-        public ResponseDTO DeleteTest(int id)
+        public ResponseDTO DeleteAnswer(int id)
         {
             var response = new ResponseDTO();
             try
             {
-                var testById = _testRepository.GetTestById(id);
-                if (testById == null)
+                var answerById = _answerRepository.GetAnswerById(id);
+                if (answerById == null)
                 {
                     response.Status = 404;
                     response.Message = "Not Found";
-                    response.Error = "Test does not exist";
+                    response.Error = "Answer not found";
                     return response;
                 }
-                testById.IsActive = false;
-                var deleteFlag = _testRepository.DeleteTest(_mapper.Map<Test>(testById));
+                answerById.IsActive = false;
+                var deleteFlag = _answerRepository.DeleteAnswer(_mapper.Map<Answer>(answerById));
                 if (deleteFlag)
                 {
                     response.Status = 204;
@@ -186,7 +149,7 @@ namespace OnlineTest.Services.Services
                 {
                     response.Status = 400;
                     response.Message = "Not Deleted";
-                    response.Error = "Could not delete test";
+                    response.Error = "Could not delete answer";
                 }
             }
             catch (Exception e)

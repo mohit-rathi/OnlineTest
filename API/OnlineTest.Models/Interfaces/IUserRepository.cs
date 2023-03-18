@@ -8,6 +8,6 @@
         User GetUserByEmail(string email);
         bool AddUser(User user);
         bool UpdateUser(User user);
-        bool DeleteUser(int id);
+        bool DeleteUser(User user);
     }
 }

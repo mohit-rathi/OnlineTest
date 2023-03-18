@@ -7,5 +7,6 @@
         IEnumerable<Test> GetTestsPaginated(int page, int limit);
         bool AddTest(Test test);
         bool UpdateTest(Test test);
+        bool DeleteTest(Test test);
     }
 }

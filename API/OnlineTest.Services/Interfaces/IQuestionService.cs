@@ -1,4 +1,6 @@
 ﻿using OnlineTest.Services.DTO;
+using OnlineTest.Services.DTO.AddDTO;
+using OnlineTest.Services.DTO.UpdateDTO;
 
 namespace OnlineTest.Services.Interfaces
 {
@@ -6,7 +8,8 @@ namespace OnlineTest.Services.Interfaces
     {
         ResponseDTO GetQuestionsByTestId(int testId);
         ResponseDTO GetQuestionById(int id);
-        ResponseDTO AddQuestion(QuestionDTO question);
-        ResponseDTO UpdateQuestion(QuestionDTO question);
+        ResponseDTO AddQuestion(AddQuestionDTO question);
+        ResponseDTO UpdateQuestion(UpdateQuestionDTO question);
+        ResponseDTO DeleteQuestion(int id);
     }
 }
