@@ -36,10 +36,13 @@ namespace OnlineTest.Models.Repository
             return _context.Technologies.Where(t => t.IsActive == true).Skip((page - 1) * limit).Take(limit).ToList();
         }
 
-        public bool AddTechnology(Technology technology)
+        public int AddTechnology(Technology technology)
         {
             _context.Add(technology);
-            return _context.SaveChanges() > 0;
+            if (_context.SaveChanges() > 0)
+                return technology.Id;
+            else
+                return 0;
         }
 
         public bool UpdateTechnology(Technology technology)

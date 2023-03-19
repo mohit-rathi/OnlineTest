@@ -4,7 +4,7 @@
     {
         IEnumerable<Answer> GetAnswers();
         Answer GetAnswerById(int id);
-        bool AddAnswer(Answer answer);
+        int AddAnswer(Answer answer);
         bool UpdateAnswer(Answer answer);
         bool DeleteAnswer(Answer answer);
     }

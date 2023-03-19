@@ -36,10 +36,13 @@ namespace OnlineTest.Models.Repository
             return _context.Users.FirstOrDefault(u => u.Email == email && u.IsActive == true);
         }
 
-        public bool AddUser(User user)
+        public int AddUser(User user)
         {
-            _context.Users.Add(user);
-            return _context.SaveChanges() > 0;
+            _context.Add(user);
+            if (_context.SaveChanges() > 0)
+                return user.Id;
+            else
+                return 0;
         }
 
         public bool UpdateUser(User user)

@@ -5,6 +5,8 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using OnlineTest.Services.DTO;
+using OnlineTest.Services.DTO.AddDTO;
+using OnlineTest.Services.DTO.UpdateDTO;
 using OnlineTest.Services.Interfaces;
 
 namespace OnlineTest.Controllers
@@ -30,24 +32,23 @@ namespace OnlineTest.Controllers
 
         #region Methods
         [HttpPost("login")]
-        public IActionResult Login(TokenDTO user)
+        public IActionResult Login(LoginDTO user)
         {
-            // data validation
-            if (user == null || string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
-            {
-                return BadRequest("Invalid login credentials");
-            }
-
             // check if user exists
             var result = _userService.IsUserExists(user);
             if (result == null)
             {
-                return Unauthorized("Invalid login credentials");
+                return Unauthorized(new ResponseDTO
+                {
+                    Status = 401,
+                    Message = "Unauthorized",
+                    Error = "Incorrect email or password"
+                });
             }
 
             // create and add refresh token in database
-            string refreshToken = Guid.NewGuid().ToString().Replace("-", "");
-            RTokenDTO rToken = new RTokenDTO
+            var refreshToken = Guid.NewGuid().ToString().Replace("-", "");
+            var rToken = new AddRTokenDTO
             {
                 RefreshToken = refreshToken,
                 IsStop = false,
@@ -56,70 +57,92 @@ namespace OnlineTest.Controllers
             };
             if (!_rTokenService.AddRefreshToken(rToken))
             {
-                return Unauthorized("Failed to add refresh token");
+                return Unauthorized(new ResponseDTO
+                {
+                    Status = 401,
+                    Message = "Unauthorized",
+                    Error = "Failed to add refresh token"
+                });
             }
 
             // create access token and send response
-            var response = GetJwt(rToken);
+            var response = GetJwt(result.Id, refreshToken);
             return Ok(response);
         }
 
         [HttpPost("refresh")]
-        public IActionResult RefreshToken(TokenDTO user)
+        public IActionResult RefreshToken(RefreshDTO user)
         {
-            // data validation
-            if (user == null || string.IsNullOrEmpty(user.RefreshToken))
-            {
-                return BadRequest("Refresh token is required");
-            }
-
             // check if refresh token exists or expired
-            var rTokenOld = _rTokenService.GetRefreshToken(user.RefreshToken);
+            var rTokenOld = _rTokenService.GetRefreshToken(user);
             if (rTokenOld == null)
             {
-                return Unauthorized("Refresh token not found");
+                return Unauthorized(new ResponseDTO
+                {
+                    Status = 401,
+                    Message = "Unauthorized",
+                    Error = "Refresh token not found"
+                });
             }
             if (rTokenOld.IsStop == true)
             {
-                return Unauthorized("Refresh token has expired");
+                return Unauthorized(new ResponseDTO
+                {
+                    Status = 401,
+                    Message = "Unauthorized",
+                    Error = "Refresh token has expired"
+                });
             }
 
             // expire old refresh token and create new refresh token
-            rTokenOld.IsStop = true;
-            bool updateFlag = _rTokenService.ExpireRefreshToken(rTokenOld);
-            string refreshToken = Guid.NewGuid().ToString().Replace("-", "");
-            var rTokenNew = new RTokenDTO
+            var updateFlag = _rTokenService.ExpireRefreshToken(new UpdateRTokenDTO
+            {
+                Id = rTokenOld.Id,
+                IsStop = true
+            });
+            var refreshToken = Guid.NewGuid().ToString().Replace("-", "");
+            var rTokenNew = new AddRTokenDTO
             {
                 RefreshToken = refreshToken,
                 IsStop = false,
                 CreatedOn = DateTime.UtcNow,
                 UserId = rTokenOld.UserId
             };
-            bool addFlag = _rTokenService.AddRefreshToken(rTokenNew);
+            var addFlag = _rTokenService.AddRefreshToken(rTokenNew);
             if (!updateFlag || !addFlag)
             {
-                return Unauthorized("Could not refresh token");
+                return Unauthorized(new ResponseDTO
+                {
+                    Status = 401,
+                    Message = "Unauthorized",
+                    Error = "Could not refresh token"
+                });
             }
 
             // create access token and send response
-            var response = GetJwt(rTokenNew);
+            var response = GetJwt(rTokenNew.UserId, refreshToken);
             return Ok(response);
         }
 
-        private object GetJwt(RTokenDTO rToken)
+        private object GetJwt(int userId, string refreshToken)
         {
             var now = DateTime.UtcNow;
+
+            // JWT claims
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sub, "jwt_token"),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iat, now.ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Integer64),
-                new Claim("Id", Convert.ToString(rToken.UserId))
+                new Claim("Id", Convert.ToString(userId))
             };
+
+            // signing key
             var symmetricKeyAsBase64 = _configuration["SecretKey"];
             var keyByteArray = Encoding.ASCII.GetBytes(symmetricKeyAsBase64);
             var signingKey = new SymmetricSecurityKey(keyByteArray);
+
             var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
+
+            // token options
             var tokenOptions = new JwtSecurityToken(
                 issuer: _configuration["Issuer"],
                 audience: _configuration["Audience"],
@@ -127,12 +150,16 @@ namespace OnlineTest.Controllers
                 expires: now.Add(TimeSpan.FromHours(24)),
                 signingCredentials: signingCredentials
             );
+
+            // active token
             var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+
+            // create and return response
             var response = new
             {
-                id = rToken.UserId,
+                id = userId,
                 access_token = tokenString,
-                refresh_token = rToken.RefreshToken,
+                refresh_token = refreshToken,
                 expires_in = (int)TimeSpan.FromHours(24).TotalSeconds
             };
             return response;

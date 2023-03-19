@@ -26,10 +26,13 @@ namespace OnlineTest.Models.Repository
             return _context.Answers.FirstOrDefault(a => a.Id == id && a.IsActive == true);
         }
 
-        public bool AddAnswer(Answer answer)
+        public int AddAnswer(Answer answer)
         {
             _context.Add(answer);
-            return _context.SaveChanges() > 0;
+            if (_context.SaveChanges() > 0)
+                return answer.Id;
+            else
+                return 0;
         }
 
         public bool UpdateAnswer(Answer answer)

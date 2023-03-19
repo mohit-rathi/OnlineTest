@@ -105,18 +105,17 @@ namespace OnlineTest.Services.Services
                     response.Error = "Technology does not exist";
                     return response;
                 }
-                var addFlag = _testRepository.AddTest(_mapper.Map<Test>(test));
-                if (addFlag)
-                {
-                    response.Status = 204;
-                    response.Message = "Created";
-                }
-                else
+                var testId = _testRepository.AddTest(_mapper.Map<Test>(test));
+                if (testId == 0)
                 {
                     response.Status = 400;
                     response.Message = "Not Created";
                     response.Error = "Could not add test";
+                    return response;
                 }
+                response.Status = 201;
+                response.Message = "Created";
+                response.Data = testId;
             }
             catch (Exception e)
             {

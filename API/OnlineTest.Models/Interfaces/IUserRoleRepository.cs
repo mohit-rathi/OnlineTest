@@ -2,6 +2,6 @@
 {
     public interface IUserRoleRepository
     {
-
+        bool AddRole(UserRole role);
     }
 }

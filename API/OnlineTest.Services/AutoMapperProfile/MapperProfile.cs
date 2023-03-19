@@ -3,6 +3,7 @@ using OnlineTest.Models;
 using OnlineTest.Services.DTO.GetDTO;
 using OnlineTest.Services.DTO.AddDTO;
 using OnlineTest.Services.DTO.UpdateDTO;
+using OnlineTest.Services.DTO;
 
 namespace OnlineTest.Services.AutoMapperProfile
 {
@@ -14,6 +15,12 @@ namespace OnlineTest.Services.AutoMapperProfile
             CreateMap<User, GetUserDTO>();
             CreateMap<AddUserDTO, User>();
             CreateMap<UpdateUserDTO, User>();
+            #endregion
+
+            #region Token
+            CreateMap<RToken, GetRTokenDTO>();
+            CreateMap<AddRTokenDTO, RToken>();
+            CreateMap<UpdateRTokenDTO, RToken>();
             #endregion
 
             #region Technology

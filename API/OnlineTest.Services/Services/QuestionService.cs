@@ -86,18 +86,17 @@ namespace OnlineTest.Services.Services
                     response.Error = "Test does not exist";
                     return response;
                 }
-                var addFlag = _questionRepository.AddQuestion(_mapper.Map<Question>(question));
-                if (addFlag)
-                {
-                    response.Status = 204;
-                    response.Message = "Created";
-                }
-                else
+                var questionId = _questionRepository.AddQuestion(_mapper.Map<Question>(question));
+                if (questionId == 0)
                 {
                     response.Status = 400;
                     response.Message = "Not Created";
                     response.Error = "Could not add question";
+                    return response;
                 }
+                response.Status = 201;
+                response.Message = "Created";
+                response.Data = questionId;
             }
             catch (Exception e)
             {

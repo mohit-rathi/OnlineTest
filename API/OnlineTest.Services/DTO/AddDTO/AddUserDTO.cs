@@ -17,6 +17,8 @@ namespace OnlineTest.Services.DTO.AddDTO
         [Required(ErrorMessage = "Password is required")]
         [StringLength(20, MinimumLength = 4, ErrorMessage = "Password should be {2} to {1} characters long")]
         public string Password { get; set; }
-        public bool IsActive { get; set; } = true;
+        public bool IsActive { get; set; }
+        [Required]
+        public bool IsAdmin { get; set; }
     }
 }

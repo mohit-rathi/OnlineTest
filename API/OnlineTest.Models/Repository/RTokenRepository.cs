@@ -16,6 +16,11 @@ namespace OnlineTest.Models.Repository
         #endregion
 
         #region Methods
+        public RToken GetRefreshToken(int id, string refreshToken)
+        {
+            return _context.RTokens.FirstOrDefault(x => x.UserId == id && x.RefreshToken == refreshToken);
+        }
+
         public bool AddRefreshToken(RToken token)
         {
             _context.RTokens.Add(token);
@@ -24,13 +29,8 @@ namespace OnlineTest.Models.Repository
 
         public bool ExpireRefreshToken(RToken token)
         {
-            _context.Update(token);
+            _context.Entry(token).Property("IsStop").IsModified = true;
             return _context.SaveChanges() > 0;
-        }
-
-        public RToken GetRefreshToken(string refreshToken)
-        {
-            return _context.RTokens.FirstOrDefault(x => x.RefreshToken == refreshToken);
         }
         #endregion
     }

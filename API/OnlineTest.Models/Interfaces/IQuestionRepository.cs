@@ -4,7 +4,7 @@
     {
         IEnumerable<Question> GetQuestionsByTestId(int testId);
         Question GetQuestionById(int id);
-        bool AddQuestion(Question question);
+        int AddQuestion(Question question);
         bool UpdateQuestion(Question question);
         bool DeleteQuestion(Question question);
     }

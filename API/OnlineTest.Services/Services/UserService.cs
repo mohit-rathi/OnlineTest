@@ -14,14 +14,16 @@ namespace OnlineTest.Services.Services
         #region Fields
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
+        private readonly IUserRoleRepository _userRoleRepository;
         private readonly IHasherService _hasherService;
         #endregion
 
         #region Constructor
-        public UserService(IMapper mapper, IUserRepository userRepository, IHasherService hasherService)
+        public UserService(IMapper mapper, IUserRepository userRepository, IUserRoleRepository userRoleRepository, IHasherService hasherService)
         {
             _mapper = mapper;
             _userRepository = userRepository;
+            _userRoleRepository = userRoleRepository;
             _hasherService = hasherService;
         }
         #endregion
@@ -133,18 +135,33 @@ namespace OnlineTest.Services.Services
                     return response;
                 }
                 user.Password = _hasherService.Hash(user.Password);
-                var addFlag = _userRepository.AddUser(_mapper.Map<User>(user));
-                if (addFlag)
-                {
-                    response.Status = 204;
-                    response.Message = "Created";
-                }
-                else
+                user.IsActive = true;
+                var userId = _userRepository.AddUser(_mapper.Map<User>(user));
+                if (userId == 0)
                 {
                     response.Status = 400;
                     response.Message = "Not Created";
                     response.Error = "Could not add user";
+                    return response;
                 }
+                if (user.IsAdmin)
+                {
+                    var roleAdmin = new UserRole
+                    {
+                        UserId = userId,
+                        RoleId = 1
+                    };
+                    _userRoleRepository.AddRole(roleAdmin);
+                }
+                var roleUser = new UserRole
+                {
+                    UserId = userId,
+                    RoleId = 2
+                };
+                _userRoleRepository.AddRole(roleUser);
+                response.Status = 201;
+                response.Message = "Created";
+                response.Data = userId;
             }
             catch (Exception e)
             {
@@ -234,7 +251,7 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
-        public GetUserDTO IsUserExists(TokenDTO user)
+        public GetUserDTO IsUserExists(LoginDTO user)
         {
             var result = _userRepository.GetUserByEmail(user.Email);
             if (result == null || result.Password != _hasherService.Hash(user.Password))

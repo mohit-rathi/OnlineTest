@@ -60,6 +60,7 @@ builder.Services.AddDbContext<OnlineTestContext>(options =>
 builder.Services.AddScoped<IHasherService, HasherService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddScoped<IRTokenService, RTokenService>();
 builder.Services.AddScoped<IRTokenRepository, RTokenRepository>();
 builder.Services.AddScoped<ITechnologyService, TechnologyService>();

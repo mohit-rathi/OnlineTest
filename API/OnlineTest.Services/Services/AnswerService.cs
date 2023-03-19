@@ -68,18 +68,17 @@ namespace OnlineTest.Services.Services
             var response = new ResponseDTO();
             try
             {
-                var addFlag = _answerRepository.AddAnswer(_mapper.Map<Answer>(answer));
-                if (addFlag)
-                {
-                    response.Status = 204;
-                    response.Message = "Created";
-                }
-                else
+                var answerId = _answerRepository.AddAnswer(_mapper.Map<Answer>(answer));
+                if (answerId == 0)
                 {
                     response.Status = 400;
                     response.Message = "Not Created";
                     response.Error = "Could not add answer";
+                    return response;
                 }
+                response.Status = 201;
+                response.Message = "Created";
+                response.Data = answerId;
             }
             catch (Exception e)
             {

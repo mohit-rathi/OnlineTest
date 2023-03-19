@@ -26,10 +26,13 @@ namespace OnlineTest.Models.Repository
             return _context.Questions.FirstOrDefault(q => q.Id == id && q.IsActive == true);
         }
 
-        public bool AddQuestion(Question question)
+        public int AddQuestion(Question question)
         {
             _context.Add(question);
-            return _context.SaveChanges() > 0;
+            if (_context.SaveChanges() > 0)
+                return question.Id;
+            else
+                return 0;
         }
 
         public bool UpdateQuestion(Question question)

@@ -31,10 +31,13 @@ namespace OnlineTest.Models.Repository
             return _context.Tests.Where(t => t.IsActive == true).Skip((page - 1) * limit).Take(limit).ToList();
         }
 
-        public bool AddTest(Test test)
+        public int AddTest(Test test)
         {
             _context.Add(test);
-            return _context.SaveChanges() > 0;
+            if (_context.SaveChanges() > 0)
+                return test.Id;
+            else
+                return 0;
         }
 
         public bool UpdateTest(Test test)
