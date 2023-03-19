@@ -14,9 +14,10 @@ namespace OnlineTest.Services.DTO.AddDTO
         public int Weightage { get; set; }
         [Required(ErrorMessage = "Order is required")]
         public int SortOrder { get; set; }
-        public bool IsActive { get; set; } = true;
+        public bool IsActive { get; set; }
         [Required(ErrorMessage = "{0} is required")]
         public int TestId { get; set; }
         public int CreatedBy { get; set; }
+        public DateTime CreatedOn { get; set; }
     }
 }

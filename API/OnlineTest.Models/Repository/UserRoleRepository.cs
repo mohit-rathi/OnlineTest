@@ -15,7 +15,26 @@ namespace OnlineTest.Models.Repository
         }
         #endregion
 
+        #region Enum
+        private enum RoleMap
+        {
+            Admin = 1,
+            User = 2
+        }
+        #endregion
+
         #region Methods
+        public List<string> GetRoles(int userId)
+        {
+            var result = _context.UserRoles.Where(u => u.UserId == userId).ToList();
+            List<string> roles = new List<string>();
+            foreach (var row in result)
+            {
+                roles.Add(((RoleMap)row.RoleId).ToString());
+            }
+            return roles;
+        }
+
         public bool AddRole(UserRole role)
         {
             _context.Add(role);

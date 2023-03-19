@@ -22,9 +22,15 @@ namespace OnlineTest.Controllers
 
         #region Methods
         [HttpGet]
-        public IActionResult GetQuestionsByTestId(int testId)
+        public IActionResult GetQuestionsByTestId(int id)
         {
-            return Ok(_questionService.GetQuestionsByTestId(testId));
+            return Ok(_questionService.GetQuestionsByTestId(id));
+        }
+
+        [HttpGet("id")]
+        public IActionResult GetQuestionById(int id)
+        {
+            return Ok(_questionService.GetQuestionById(id));
         }
 
         [HttpPost]
@@ -37,6 +43,12 @@ namespace OnlineTest.Controllers
         public IActionResult UpdateQuestion(UpdateQuestionDTO question)
         {
             return Ok(_questionService.UpdateQuestion(question));
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteQuestion(int id)
+        {
+            return Ok(_questionService.DeleteQuestion(id));
         }
         #endregion
     }

@@ -7,7 +7,7 @@ using OnlineTest.Services.Interfaces;
 namespace OnlineTest.Controllers
 {
     [Route("api/[controller]")]
-    //[Authorize]
+    [Authorize]
     [ApiController]
     public class UserController : ControllerBase
     {
@@ -24,9 +24,21 @@ namespace OnlineTest.Controllers
 
         #region Methods
         [HttpGet]
-        public IActionResult GetUsers(int page, int limit)
+        public IActionResult GetUsers()
+        {
+            return Ok(_userService.GetUsers());
+        }
+
+        [HttpGet("paginated")]
+        public IActionResult GetUsersPaginated(int page, int limit)
         {
             return Ok(_userService.GetUsersPaginated(page, limit));
+        }
+
+        [HttpGet("id")]
+        public IActionResult GetUserById(int id)
+        {
+            return Ok(_userService.GetUserById(id));
         }
 
         [HttpPost]

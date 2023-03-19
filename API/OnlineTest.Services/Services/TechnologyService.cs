@@ -130,6 +130,8 @@ namespace OnlineTest.Services.Services
                     response.Error = "Technology already exists";
                     return response;
                 }
+                technology.IsActive = true;
+                technology.CreatedOn = DateTime.UtcNow;
                 var technologyId = _technologyRepository.AddTechnology(_mapper.Map<Technology>(technology));
                 if (technologyId == 0)
                 {
@@ -172,6 +174,7 @@ namespace OnlineTest.Services.Services
                     response.Error = "Technology already exists";
                     return response;
                 }
+                technology.ModifiedOn = DateTime.UtcNow;
                 var updateFlag = _technologyRepository.UpdateTechnology(_mapper.Map<Technology>(technology));
                 if (updateFlag)
                 {

@@ -31,6 +31,11 @@ namespace OnlineTest.Models.Repository
             return _context.Tests.Where(t => t.IsActive == true).Skip((page - 1) * limit).Take(limit).ToList();
         }
 
+        public IEnumerable<Test> GetTestsByTechnologyId(int technologyId)
+        {
+            return _context.Tests.Where(t => t.TechnologyId == technologyId && t.IsActive == true).ToList();
+        }
+
         public int AddTest(Test test)
         {
             _context.Add(test);

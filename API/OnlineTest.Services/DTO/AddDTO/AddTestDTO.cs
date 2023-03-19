@@ -11,8 +11,8 @@ namespace OnlineTest.Services.DTO.AddDTO
         public DateTime? ExpireOn { get; set; }
         [Required(ErrorMessage = "{0} is required")]
         public int TechnologyId { get; set; }
-        public bool IsActive { get; set; } = true;
+        public bool IsActive { get; set; }
         public int CreatedBy { get; set; }
-        public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedOn { get; set; }
     }
 }

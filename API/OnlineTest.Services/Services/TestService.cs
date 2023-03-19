@@ -92,6 +92,33 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
+        public ResponseDTO GetTestsByTechnologyId(int technologyId)
+        {
+            var response = new ResponseDTO();
+            try
+            {
+                var technologyById = _technologyRepository.GetTechnologyById(technologyId);
+                if (technologyById == null)
+                {
+                    response.Status = 404;
+                    response.Message = "Not Found";
+                    response.Error = "Technology not found";
+                    return response;
+                }
+                var data = _mapper.Map<List<GetTestDTO>>(_testRepository.GetTestsByTechnologyId(technologyId).ToList());
+                response.Status = 200;
+                response.Message = "Ok";
+                response.Data = data;
+            }
+            catch (Exception e)
+            {
+                response.Status = 500;
+                response.Message = "Internal Server Error";
+                response.Error = e.Message;
+            }
+            return response;
+        }
+
         public ResponseDTO AddTest(AddTestDTO test)
         {
             var response = new ResponseDTO();
@@ -105,6 +132,8 @@ namespace OnlineTest.Services.Services
                     response.Error = "Technology does not exist";
                     return response;
                 }
+                test.IsActive = true;
+                test.CreatedOn = DateTime.UtcNow;
                 var testId = _testRepository.AddTest(_mapper.Map<Test>(test));
                 if (testId == 0)
                 {

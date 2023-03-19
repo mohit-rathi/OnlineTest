@@ -32,6 +32,14 @@ namespace OnlineTest.Services.Services
             var response = new ResponseDTO();
             try
             {
+                var testById = _testRepository.GetTestById(testId);
+                if (testById == null)
+                {
+                    response.Status = 404;
+                    response.Message = "Not Found";
+                    response.Error = "Test not found";
+                    return response;
+                }
                 var data = _mapper.Map<List<GetQuestionDTO>>(_questionRepository.GetQuestionsByTestId(testId).ToList());
                 response.Status = 200;
                 response.Message = "Ok";
@@ -86,6 +94,8 @@ namespace OnlineTest.Services.Services
                     response.Error = "Test does not exist";
                     return response;
                 }
+                question.IsActive = true;
+                question.CreatedOn = DateTime.UtcNow;
                 var questionId = _questionRepository.AddQuestion(_mapper.Map<Question>(question));
                 if (questionId == 0)
                 {

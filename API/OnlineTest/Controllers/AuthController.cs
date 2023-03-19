@@ -128,11 +128,12 @@ namespace OnlineTest.Controllers
         {
             var now = DateTime.UtcNow;
 
-            // JWT claims
+            // jwt claims
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Iat, now.ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Integer64),
                 new Claim("Id", Convert.ToString(userId))
+                // roles
             };
 
             // signing key

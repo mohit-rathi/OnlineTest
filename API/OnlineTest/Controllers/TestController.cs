@@ -22,9 +22,21 @@ namespace OnlineTest.Controllers
 
         #region Methods
         [HttpGet]
-        public IActionResult GetTests(int page, int limit)
+        public IActionResult GetTestsByTechnologyId(int id)
+        {
+            return Ok(_testService.GetTestsByTechnologyId(id));
+        }
+
+        [HttpGet("paginated")]
+        public IActionResult GetTestsPaginated(int page, int limit)
         {
             return Ok(_testService.GetTestsPaginated(page, limit));
+        }
+
+        [HttpGet("id")]
+        public IActionResult GetTestById(int id)
+        {
+            return Ok(_testService.GetTestById(id));
         }
 
         [HttpPost]
@@ -37,6 +49,12 @@ namespace OnlineTest.Controllers
         public IActionResult UpdateTest(UpdateTestDTO test)
         {
             return Ok(_testService.UpdateTest(test));
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteTest(int id)
+        {
+            return Ok(_testService.DeleteTest(id));
         }
         #endregion
     }
