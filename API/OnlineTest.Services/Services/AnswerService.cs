@@ -14,13 +14,19 @@ namespace OnlineTest.Services.Services
         #region Fields
         private readonly IMapper _mapper;
         private readonly IAnswerRepository _answerRepository;
+        private readonly ITestRepository _testRepository;
+        private readonly IQuestionRepository _questionRepository;
+        private readonly IQuestionAnswerMapRepository _qaMapRepository;
         #endregion
 
         #region Constructor
-        public AnswerService(IMapper mapper, IAnswerRepository answerRepository)
+        public AnswerService(IMapper mapper, IAnswerRepository answerRepository, ITestRepository testRepository, IQuestionRepository questionRepository, IQuestionAnswerMapRepository qaMapRepository)
         {
             _mapper = mapper;
             _answerRepository = answerRepository;
+            _testRepository = testRepository;
+            _questionRepository = questionRepository;
+            _qaMapRepository = qaMapRepository;
         }
         #endregion
 
@@ -49,7 +55,15 @@ namespace OnlineTest.Services.Services
             var response = new ResponseDTO();
             try
             {
-                var data = _mapper.Map<GetAnswerDTO>(_answerRepository.GetAnswerById(id));
+                var answerById = _answerRepository.GetAnswerById(id);
+                if (answerById == null)
+                {
+                    response.Status = 404;
+                    response.Message = "Not Found";
+                    response.Error = "Answer not found";
+                    return response;
+                }
+                var data = _mapper.Map<GetAnswerDTO>(answerById);
                 response.Status = 200;
                 response.Message = "Ok";
                 response.Data = data;
@@ -68,6 +82,24 @@ namespace OnlineTest.Services.Services
             var response = new ResponseDTO();
             try
             {
+                var testById = _testRepository.GetTestById(answer.TestId);
+                if (testById == null)
+                {
+                    response.Status = 404;
+                    response.Message = "Not Found";
+                    response.Error = "Test not found";
+                    return response;
+                }
+                var questionById = _questionRepository.GetQuestionById(answer.QuestionId);
+                if (questionById == null)
+                {
+                    response.Status = 404;
+                    response.Message = "Not Found";
+                    response.Error = "Question not found";
+                    return response;
+                }
+                answer.IsActive = true;
+                answer.CreatedOn = DateTime.UtcNow;
                 var answerId = _answerRepository.AddAnswer(_mapper.Map<Answer>(answer));
                 if (answerId == 0)
                 {
@@ -76,6 +108,16 @@ namespace OnlineTest.Services.Services
                     response.Error = "Could not add answer";
                     return response;
                 }
+                var map = new QuestionAnswerMap
+                {
+                    TestId = answer.TestId,
+                    QuestionId = answer.QuestionId,
+                    AnswerId = answerId,
+                    IsActive = true,
+                    CreatedBy = answer.CreatedBy,
+                    CreatedOn = answer.CreatedOn,
+                };
+                _qaMapRepository.AddMap(map);
                 response.Status = 201;
                 response.Message = "Created";
                 response.Data = answerId;

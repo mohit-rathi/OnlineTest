@@ -23,7 +23,7 @@ namespace OnlineTest.Models.Repository
 
         public Test GetTestById(int id)
         {
-            return _context.Tests.FirstOrDefault(t => t.Id == id  && t.IsActive == true);
+            return _context.Tests.FirstOrDefault(t => t.Id == id && t.IsActive == true);
         }
 
         public IEnumerable<Test> GetTestsPaginated(int page, int limit)

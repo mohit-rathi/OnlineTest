@@ -14,14 +14,18 @@ namespace OnlineTest.Services.Services
         #region Fields
         private readonly IMapper _mapper;
         private readonly ITestRepository _testRepository;
+        private readonly IQuestionRepository _questionRepository;
+        private readonly IAnswerRepository _answerRepository;
         private readonly ITechnologyRepository _technologyRepository;
         #endregion
 
         #region Constructor
-        public TestService(IMapper mapper, ITestRepository testRepository, ITechnologyRepository technologyRepository)
+        public TestService(IMapper mapper, ITestRepository testRepository, IQuestionRepository questionRepository, IAnswerRepository answerRepository, ITechnologyRepository technologyRepository)
         {
             _mapper = mapper;
             _testRepository = testRepository;
+            _questionRepository = questionRepository;
+            _answerRepository = answerRepository;
             _technologyRepository = technologyRepository;
         }
         #endregion
@@ -60,6 +64,13 @@ namespace OnlineTest.Services.Services
                     return response;
                 }
                 var data = _mapper.Map<GetTestDTO>(test);
+                var questionsList = _mapper.Map<List<GetQuestionDTO>>(_questionRepository.GetQuestionsByTestId(test.Id).ToList());
+                foreach (var question in questionsList)
+                {
+                    var answersList = _mapper.Map<List<GetAnswerDTO>>(_answerRepository.GetAnswersByQuestionId(question.Id).ToList());
+                    question.Answers = answersList;
+                }
+                data.Questions = questionsList;
                 response.Status = 200;
                 response.Message = "Ok";
                 response.Data = data;

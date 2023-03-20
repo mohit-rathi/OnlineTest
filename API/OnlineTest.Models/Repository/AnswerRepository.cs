@@ -1,4 +1,5 @@
-﻿using OnlineTest.Models.Interfaces;
+﻿using System.Security.Cryptography;
+using OnlineTest.Models.Interfaces;
 
 namespace OnlineTest.Models.Repository
 {
@@ -19,6 +20,22 @@ namespace OnlineTest.Models.Repository
         public IEnumerable<Answer> GetAnswers()
         {
             return _context.Answers.Where(a => a.IsActive == true).ToList();
+        }
+
+        public IEnumerable<Answer> GetAnswersByQuestionId(int questionId)
+        {
+            return (from qam in _context.QuestionAnswerMapping
+            join a in _context.Answers
+            on qam.AnswerId equals a.Id
+            where qam.QuestionId == questionId
+            select new Answer
+            {
+                Id = a.Id,
+                Ans = a.Ans,
+                IsActive = a.IsActive,
+                CreatedBy = a.CreatedBy,
+                CreatedOn = a.CreatedOn
+            }).ToList();
         }
 
         public Answer GetAnswerById(int id)

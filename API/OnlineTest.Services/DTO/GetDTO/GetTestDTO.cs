@@ -7,5 +7,6 @@
         public string Description { get; set; }
         public DateTime? ExpireOn { get; set; }
         public int TechnologyId { get; set; }
+        public List<GetQuestionDTO>? Questions { get; set; }
     }
 }
