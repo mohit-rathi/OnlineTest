@@ -94,6 +94,14 @@ namespace OnlineTest.Services.Services
                     response.Error = "Test does not exist";
                     return response;
                 }
+                var existFlag = _questionRepository.IsQuestionExists(question.TestId, question.Que);
+                if (existFlag)
+                {
+                    response.Status = 400;
+                    response.Message = "Not Created";
+                    response.Error = "Question already exists";
+                    return response;
+                }
                 question.IsActive = true;
                 question.CreatedOn = DateTime.UtcNow;
                 var questionId = _questionRepository.AddQuestion(_mapper.Map<Question>(question));
@@ -128,6 +136,14 @@ namespace OnlineTest.Services.Services
                     response.Status = 404;
                     response.Message = "Not Found";
                     response.Error = "Question not found";
+                    return response;
+                }
+                var existFlag = _questionRepository.IsQuestionExists(questionById.TestId, question.Que);
+                if (existFlag)
+                {
+                    response.Status = 400;
+                    response.Message = "Not Updated";
+                    response.Error = "Question already exists";
                     return response;
                 }
                 var updateFlag = _questionRepository.UpdateQuestion(_mapper.Map<Question>(question));

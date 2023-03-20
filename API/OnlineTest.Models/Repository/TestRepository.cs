@@ -36,6 +36,15 @@ namespace OnlineTest.Models.Repository
             return _context.Tests.Where(t => t.TechnologyId == technologyId && t.IsActive == true).ToList();
         }
 
+        public bool IsTestExists(int technologyId, string testName)
+        {
+            var result = _context.Tests.FirstOrDefault(t => t.TechnologyId == technologyId && t.TestName == testName && t.IsActive == true);
+            if (result != null)
+                return true;
+            else
+                return false;
+        }
+
         public int AddTest(Test test)
         {
             _context.Add(test);

@@ -98,6 +98,14 @@ namespace OnlineTest.Services.Services
                     response.Error = "Question not found";
                     return response;
                 }
+                var existFlag = _answerRepository.IsAnswerExists(answer.TestId, answer.QuestionId, answer.Ans);
+                if (existFlag)
+                {
+                    response.Status = 400;
+                    response.Message = "Not Created";
+                    response.Error = "Answer already exists";
+                    return response;
+                }
                 answer.IsActive = true;
                 answer.CreatedOn = DateTime.UtcNow;
                 var answerId = _answerRepository.AddAnswer(_mapper.Map<Answer>(answer));
@@ -142,6 +150,14 @@ namespace OnlineTest.Services.Services
                     response.Status = 404;
                     response.Message = "Not Found";
                     response.Error = "Answer not found";
+                    return response;
+                }
+                var existFlag = _answerRepository.IsAnswerExists(answer.TestId, answer.QuestionId, answer.Ans);
+                if (existFlag)
+                {
+                    response.Status = 400;
+                    response.Message = "Not Updated";
+                    response.Error = "Answer already exists";
                     return response;
                 }
                 var updateFlag = _answerRepository.UpdateAnswer(_mapper.Map<Answer>(answer));

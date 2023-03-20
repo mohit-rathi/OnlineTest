@@ -6,9 +6,9 @@ using OnlineTest.Services.Interfaces;
 
 namespace OnlineTest.Controllers
 {
-    [Route("api/[controller]")]
     [Authorize]
     [ApiController]
+    [Route("api/[controller]")]
     public class UserController : ControllerBase
     {
         #region Fields

@@ -26,6 +26,15 @@ namespace OnlineTest.Models.Repository
             return _context.Questions.FirstOrDefault(q => q.Id == id && q.IsActive == true);
         }
 
+        public bool IsQuestionExists(int testId, string que)
+        {
+            var result = _context.Questions.Where(q => q.TestId == testId && q.Que == que && q.IsActive == true);
+            if (result != null)
+                return true;
+            else
+                return false;
+        }
+
         public int AddQuestion(Question question)
         {
             _context.Add(question);

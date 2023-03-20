@@ -143,6 +143,14 @@ namespace OnlineTest.Services.Services
                     response.Error = "Technology does not exist";
                     return response;
                 }
+                var existFlag = _testRepository.IsTestExists(test.TechnologyId, test.TestName);
+                if (existFlag)
+                {
+                    response.Status = 400;
+                    response.Message = "Not Created";
+                    response.Error = "Test already exists";
+                    return response;
+                }
                 test.IsActive = true;
                 test.CreatedOn = DateTime.UtcNow;
                 var testId = _testRepository.AddTest(_mapper.Map<Test>(test));
@@ -177,6 +185,14 @@ namespace OnlineTest.Services.Services
                     response.Status = 404;
                     response.Message = "Not Found";
                     response.Error = "Test does not exist";
+                    return response;
+                }
+                var existFlag = _testRepository.IsTestExists(test.TechnologyId, test.TestName);
+                if (existFlag)
+                {
+                    response.Status = 400;
+                    response.Message = "Not Updated";
+                    response.Error = "Test already exists";
                     return response;
                 }
                 var updateFlag = _testRepository.UpdateTest(_mapper.Map<Test>(test));
