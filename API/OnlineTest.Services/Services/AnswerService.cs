@@ -77,7 +77,7 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
-        public ResponseDTO AddAnswer(AddAnswerDTO answer)
+        public ResponseDTO AddAnswer(int userId, AddAnswerDTO answer)
         {
             var response = new ResponseDTO();
             try
@@ -107,6 +107,7 @@ namespace OnlineTest.Services.Services
                     return response;
                 }
                 answer.IsActive = true;
+                answer.CreatedBy = userId;
                 answer.CreatedOn = DateTime.UtcNow;
                 var answerId = _answerRepository.AddAnswer(_mapper.Map<Answer>(answer));
                 if (answerId == 0)

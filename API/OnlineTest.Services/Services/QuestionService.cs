@@ -81,7 +81,7 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
-        public ResponseDTO AddQuestion(AddQuestionDTO question)
+        public ResponseDTO AddQuestion(int userId, AddQuestionDTO question)
         {
             var response = new ResponseDTO();
             try
@@ -103,6 +103,7 @@ namespace OnlineTest.Services.Services
                     return response;
                 }
                 question.IsActive = true;
+                question.CreatedBy = userId;
                 question.CreatedOn = DateTime.UtcNow;
                 var questionId = _questionRepository.AddQuestion(_mapper.Map<Question>(question));
                 if (questionId == 0)

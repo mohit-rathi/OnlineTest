@@ -1,4 +1,5 @@
-﻿using OnlineTest.Models.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using OnlineTest.Models.Interfaces;
 
 namespace OnlineTest.Models.Repository
 {
@@ -28,7 +29,7 @@ namespace OnlineTest.Models.Repository
 
         public bool IsQuestionExists(int testId, string que)
         {
-            var result = _context.Questions.Where(q => q.TestId == testId && q.Que == que && q.IsActive == true);
+            var result = _context.Questions.FirstOrDefault(q => q.TestId == testId && q.Que == que && q.IsActive == true);
             if (result != null)
                 return true;
             else

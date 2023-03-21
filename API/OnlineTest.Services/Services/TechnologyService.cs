@@ -117,7 +117,7 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
-        public ResponseDTO AddTechnology(AddTechnologyDTO technology)
+        public ResponseDTO AddTechnology(int userId, AddTechnologyDTO technology)
         {
             var response = new ResponseDTO();
             try
@@ -131,6 +131,7 @@ namespace OnlineTest.Services.Services
                     return response;
                 }
                 technology.IsActive = true;
+                technology.CreatedBy = userId;
                 technology.CreatedOn = DateTime.UtcNow;
                 var technologyId = _technologyRepository.AddTechnology(_mapper.Map<Technology>(technology));
                 if (technologyId == 0)
@@ -153,7 +154,7 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
-        public ResponseDTO UpdateTechnology(UpdateTechnologyDTO technology)
+        public ResponseDTO UpdateTechnology(int userId, UpdateTechnologyDTO technology)
         {
             var response = new ResponseDTO();
             try
@@ -174,6 +175,7 @@ namespace OnlineTest.Services.Services
                     response.Error = "Technology already exists";
                     return response;
                 }
+                technology.ModifiedBy = userId;
                 technology.ModifiedOn = DateTime.UtcNow;
                 var updateFlag = _technologyRepository.UpdateTechnology(_mapper.Map<Technology>(technology));
                 if (updateFlag)

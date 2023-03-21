@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
@@ -18,14 +19,16 @@ namespace OnlineTest.Controllers
         #region Fields
         private readonly IUserService _userService;
         private readonly IRTokenService _rTokenService;
+        private readonly IUserRoleService _userRoleService;
         private readonly IConfiguration _configuration;
         #endregion
 
         #region Constructor
-        public AuthController(IUserService userService, IRTokenService rTokenService, IConfiguration configuration)
+        public AuthController(IUserService userService, IRTokenService rTokenService, IUserRoleService userRoleService, IConfiguration configuration)
         {
             _userService = userService;
             _rTokenService = rTokenService;
+            _userRoleService = userRoleService;
             _configuration = configuration.GetSection("JWTConfig");
         }
         #endregion
@@ -132,8 +135,8 @@ namespace OnlineTest.Controllers
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Iat, now.ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Integer64),
-                new Claim("Id", Convert.ToString(userId))
-                // roles
+                new Claim("Id", Convert.ToString(userId)),
+                new Claim("Role", _userRoleService.GetRoles(userId).FirstOrDefault())
             };
 
             // signing key

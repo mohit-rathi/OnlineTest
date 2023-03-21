@@ -130,7 +130,7 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
-        public ResponseDTO AddTest(AddTestDTO test)
+        public ResponseDTO AddTest(int userId, AddTestDTO test)
         {
             var response = new ResponseDTO();
             try
@@ -152,6 +152,7 @@ namespace OnlineTest.Services.Services
                     return response;
                 }
                 test.IsActive = true;
+                test.CreatedBy = userId;
                 test.CreatedOn = DateTime.UtcNow;
                 var testId = _testRepository.AddTest(_mapper.Map<Test>(test));
                 if (testId == 0)
