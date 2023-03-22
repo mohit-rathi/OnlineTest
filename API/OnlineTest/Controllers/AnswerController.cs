@@ -25,9 +25,9 @@ namespace OnlineTest.Controllers
 
         #region Methods
         [HttpGet]
-        public IActionResult GetAnswers()
+        public IActionResult GetAnswersByQuestionId(int id)
         {
-            return Ok(_answerService.GetAnswers());
+            return Ok(_answerService.GetAnswersByQuestionId(id));
         }
 
         [HttpPost]
@@ -40,6 +40,12 @@ namespace OnlineTest.Controllers
         public IActionResult UpdateAnswer(UpdateAnswerDTO answer)
         {
             return Ok(_answerService.UpdateAnswer(answer));
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteAnswer(int id)
+        {
+            return Ok(_answerService.DeleteAnswer(id));
         }
         #endregion
     }

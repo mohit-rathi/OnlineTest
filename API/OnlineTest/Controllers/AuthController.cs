@@ -132,12 +132,16 @@ namespace OnlineTest.Controllers
             var now = DateTime.UtcNow;
 
             // jwt claims
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Iat, now.ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Integer64),
-                new Claim("Id", Convert.ToString(userId)),
-                new Claim("Role", _userRoleService.GetRoles(userId).FirstOrDefault())
+                new Claim("Id", Convert.ToString(userId))
             };
+            var roles = _userRoleService.GetRoles(userId);
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim("Role", role));
+            }
 
             // signing key
             var symmetricKeyAsBase64 = _configuration["SecretKey"];

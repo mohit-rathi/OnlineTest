@@ -168,7 +168,7 @@ namespace OnlineTest.Services.Services
                     return response;
                 }
                 var technologyByName = _technologyRepository.GetTechnologyByName(technology.TechName);
-                if (technologyByName != null)
+                if (technologyByName != null && technology.Id != technologyByName.Id)
                 {
                     response.Status = 400;
                     response.Message = "Not Updated";

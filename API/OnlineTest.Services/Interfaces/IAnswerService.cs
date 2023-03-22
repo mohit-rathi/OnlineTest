@@ -6,7 +6,7 @@ namespace OnlineTest.Services.Interfaces
 {
     public interface IAnswerService
     {
-        ResponseDTO GetAnswers();
+        ResponseDTO GetAnswersByQuestionId(int questionId);
         ResponseDTO GetAnswerById(int id);
         ResponseDTO AddAnswer(int userId, AddAnswerDTO answer);
         ResponseDTO UpdateAnswer(UpdateAnswerDTO answer);
