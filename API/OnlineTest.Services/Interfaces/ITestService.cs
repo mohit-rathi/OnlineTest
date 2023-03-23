@@ -13,5 +13,6 @@ namespace OnlineTest.Services.Interfaces
         ResponseDTO AddTest(int userId, AddTestDTO test);
         ResponseDTO UpdateTest(UpdateTestDTO test);
         ResponseDTO DeleteTest(int id);
+        ResponseDTO AddTestLink(int adminId, int testId, string email);
     }
 }

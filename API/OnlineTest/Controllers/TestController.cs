@@ -59,6 +59,12 @@ namespace OnlineTest.Controllers
         {
             return Ok(_testService.DeleteTest(id));
         }
+
+        [HttpPost("link")]
+        public IActionResult AddTestLink(int testId, string email)
+        {
+            return Ok(_testService.AddTestLink(Convert.ToInt32(User.FindFirstValue("Id")), testId, email));
+        }
         #endregion
     }
 }

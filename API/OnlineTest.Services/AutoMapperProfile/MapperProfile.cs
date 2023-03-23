@@ -35,6 +35,10 @@ namespace OnlineTest.Services.AutoMapperProfile
             CreateMap<UpdateTestDTO, Test>();
             #endregion
 
+            #region TestLink
+            CreateMap<AddTLinkDTO, TestLink>();
+            #endregion
+
             #region Question
             CreateMap<Question, GetQuestionDTO>();
             CreateMap<AddQuestionDTO, Question>();

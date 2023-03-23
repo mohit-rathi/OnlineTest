@@ -17,16 +17,20 @@ namespace OnlineTest.Services.Services
         private readonly IQuestionRepository _questionRepository;
         private readonly IAnswerRepository _answerRepository;
         private readonly ITechnologyRepository _technologyRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly ITestLinkRepository _testLinkRepository;
         #endregion
 
         #region Constructor
-        public TestService(IMapper mapper, ITestRepository testRepository, IQuestionRepository questionRepository, IAnswerRepository answerRepository, ITechnologyRepository technologyRepository)
+        public TestService(IMapper mapper, ITestRepository testRepository, IQuestionRepository questionRepository, IAnswerRepository answerRepository, ITechnologyRepository technologyRepository, ITestLinkRepository testLinkRepository, IUserRepository userRepository)
         {
             _mapper = mapper;
             _testRepository = testRepository;
             _questionRepository = questionRepository;
             _answerRepository = answerRepository;
             _technologyRepository = technologyRepository;
+            _testLinkRepository = testLinkRepository;
+            _userRepository = userRepository;
         }
         #endregion
 
@@ -244,6 +248,74 @@ namespace OnlineTest.Services.Services
                     response.Message = "Not Deleted";
                     response.Error = "Could not delete test";
                 }
+            }
+            catch (Exception e)
+            {
+                response.Status = 500;
+                response.Message = "Internal Server Error";
+                response.Error = e.Message;
+            }
+            return response;
+        }
+        
+        public ResponseDTO AddTestLink(int adminId, int testId, string email)
+        {
+            var response = new ResponseDTO();
+            try
+            {
+                // check if user exists
+                var userByEmail = _userRepository.GetUserByEmail(email);
+                if (userByEmail == null)
+                {
+                    response.Status = 400;
+                    response.Message = "Not Created";
+                    response.Error = "User does not exist";
+                    return response;
+                }
+
+                // check if test exists
+                var testById = _testRepository.GetTestById(testId);
+                if (testById == null)
+                {
+                    response.Status = 400;
+                    response.Message = "Not Created";
+                    response.Error = "Test does not exist";
+                    return response;
+                }
+
+                // check if link has already been created and not expired
+                var existFlag = _testLinkRepository.IsTestLinkExists(testId, userByEmail.Id);
+                if (existFlag)
+                {
+                    response.Status = 400;
+                    response.Message = "Not Created";
+                    response.Error = "Test link already exists";
+                    return response;
+                }
+
+                var testLink = new AddTLinkDTO
+                {
+                    TestId = testId,
+                    UserId = userByEmail.Id,
+                    Token = Guid.NewGuid(),
+                    Attempts = 0,
+                    ExpireOn = DateTime.UtcNow.AddDays(7),
+                    IsActive = true,
+                    CreatedBy = adminId,
+                    CreatedOn = DateTime.UtcNow,
+                };
+
+                var testLinkId = _testLinkRepository.AddTestLink(_mapper.Map<TestLink>(testLink));
+                if (testLinkId == 0)
+                {
+                    response.Status = 400;
+                    response.Message = "Not Created";
+                    response.Error = "Could not add test link";
+                    return response;
+                }
+                response.Status = 201;
+                response.Message = "Created";
+                response.Data = testLinkId;
             }
             catch (Exception e)
             {
