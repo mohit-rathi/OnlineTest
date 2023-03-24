@@ -293,7 +293,7 @@ namespace OnlineTest.Services.Services
                     return response;
                 }
 
-                var testLink = new AddTLinkDTO
+                var testLink = new TestLink
                 {
                     TestId = testId,
                     UserId = userByEmail.Id,
@@ -305,7 +305,7 @@ namespace OnlineTest.Services.Services
                     CreatedOn = DateTime.UtcNow,
                 };
 
-                var testLinkId = _testLinkRepository.AddTestLink(_mapper.Map<TestLink>(testLink));
+                var testLinkId = _testLinkRepository.AddTestLink(testLink);
                 if (testLinkId == 0)
                 {
                     response.Status = 400;
@@ -324,6 +324,40 @@ namespace OnlineTest.Services.Services
                 response.Error = e.Message;
             }
             return response;
+        }
+        
+        public ResponseDTO GetTestByLink(string token, string email)
+        {
+            var response = new ResponseDTO();
+            try
+            {
+                var testLink = _testLinkRepository.GetTestLink(Guid.Parse(token));
+                if (testLink == null)
+                {
+                    response.Status = 404;
+                    response.Message = "Not Found";
+                    response.Error = "Test link does not exist or expired";
+                    return response;
+                }
+                var testId = testLink.TestId;
+                var userId = testLink.UserId;
+                var user = _userRepository.GetUserById(userId);
+                if (email.ToLower() != user.Email.ToLower())
+                {
+                    response.Status = 400;
+                    response.Message = "Bad Request";
+                    response.Error = "Email is incorrect";
+                    return response;
+                }
+                return GetTestById(testId);
+            }
+            catch (Exception e)
+            {
+                response.Status = 500;
+                response.Message = "Internal Server Error";
+                response.Error = e.Message;
+                return response;
+            }
         }
         #endregion
     }

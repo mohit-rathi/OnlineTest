@@ -16,10 +16,10 @@ namespace OnlineTest.Models.Repository
         #endregion
 
         #region Methods
-        //public TestLink GetTestLink()
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public TestLink GetTestLink(Guid token)
+        {
+            return _context.TestLinks.FirstOrDefault(t => t.Token == token && t.ExpireOn > DateTime.UtcNow);
+        }
 
         public int AddTestLink(TestLink testLink)
         {
