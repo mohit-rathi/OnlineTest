@@ -349,15 +349,20 @@ namespace OnlineTest.Services.Services
                     response.Error = "Email is incorrect";
                     return response;
                 }
-                return GetTestById(testId);
+                response = GetTestById(testId);
+                if (response.Status == 200)
+                {
+                    testLink.AccessOn = DateTime.UtcNow;
+                    _testLinkRepository.UpdateTestLink(testLink);
+                }
             }
             catch (Exception e)
             {
                 response.Status = 500;
                 response.Message = "Internal Server Error";
                 response.Error = e.Message;
-                return response;
             }
+            return response;
         }
         #endregion
     }

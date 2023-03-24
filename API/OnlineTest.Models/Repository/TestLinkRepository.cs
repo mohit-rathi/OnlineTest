@@ -39,14 +39,11 @@ namespace OnlineTest.Models.Repository
                 return false;
         }
 
-        //public bool UpdateTestLink(TestLink testLink)
-        //{
-        //    _context.Entry(testLink).Property("AccessOn").IsModified = true;
-        //    _context.Entry(testLink).Property("Attempts").IsModified = true;
-        //    _context.Entry(testLink).Property("SubmitOn").IsModified = true;
-        //    _context.Entry(testLink).Property("").IsModified = true;
-        //    return _context.SaveChanges() > 0;
-        //}
+        public bool UpdateTestLink(TestLink testLink)
+        {
+            _context.Entry(testLink).Property("AccessOn").IsModified = true;
+            return _context.SaveChanges() > 0;
+        }
         #endregion
     }
 }
