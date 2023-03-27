@@ -16,13 +16,10 @@ namespace OnlineTest.Models.Repository
         #endregion
 
         #region Methods
-        public int AddAnswerSheet(AnswerSheet answerSheet)
+        public bool AddAnswerSheet(List<AnswerSheet> answerSheets)
         {
-            _context.Add(answerSheet);
-            if (_context.SaveChanges() > 0)
-                return answerSheet.Id;
-            else
-                return 0;
+            _context.AddRange(answerSheets);
+            return _context.SaveChanges() > 0;
         }
         #endregion
     }

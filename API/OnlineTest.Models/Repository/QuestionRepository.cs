@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using OnlineTest.Models.Interfaces;
+﻿using OnlineTest.Models.Interfaces;
 
 namespace OnlineTest.Models.Repository
 {
@@ -19,7 +18,7 @@ namespace OnlineTest.Models.Repository
         #region Methods
         public IEnumerable<Question> GetQuestionsByTestId(int testId)
         {
-            return _context.Questions.Where(q => q.TestId == testId && q.IsActive == true).ToList();
+            return _context.Questions.Where(q => q.TestId == testId && q.IsActive == true).OrderBy(q => q.SortOrder).ToList();
         }
 
         public Question GetQuestionById(int id)

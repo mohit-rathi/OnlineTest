@@ -2,6 +2,6 @@
 {
     public interface IAnswerSheetRepository
     {
-        int AddAnswerSheet(AnswerSheet answerSheet);
+        bool AddAnswerSheet(List<AnswerSheet> answerSheets);
     }
 }
