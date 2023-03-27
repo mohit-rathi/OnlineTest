@@ -71,6 +71,12 @@ namespace OnlineTest.Controllers
         {
             return Ok(_testService.GetTestByLink(token, email));
         }
+
+        [HttpPost("submit")]
+        public IActionResult SubmitTest(AddAnswerSheetDTO answerSheet)
+        {
+            return Ok(_testService.SubmitTest(answerSheet));
+        }
         #endregion
     }
 }

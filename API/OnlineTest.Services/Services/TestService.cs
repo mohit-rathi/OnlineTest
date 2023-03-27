@@ -18,11 +18,13 @@ namespace OnlineTest.Services.Services
         private readonly IAnswerRepository _answerRepository;
         private readonly ITechnologyRepository _technologyRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IUserRoleRepository _userRoleRepository;
         private readonly ITestLinkRepository _testLinkRepository;
+        private readonly IAnswerSheetRepository _answerSheetRepository;
         #endregion
 
         #region Constructor
-        public TestService(IMapper mapper, ITestRepository testRepository, IQuestionRepository questionRepository, IAnswerRepository answerRepository, ITechnologyRepository technologyRepository, ITestLinkRepository testLinkRepository, IUserRepository userRepository)
+        public TestService(IMapper mapper, ITestRepository testRepository, IQuestionRepository questionRepository, IAnswerRepository answerRepository, ITechnologyRepository technologyRepository, ITestLinkRepository testLinkRepository, IUserRepository userRepository, IUserRoleRepository userRoleRepository, IAnswerSheetRepository answerSheetRepository)
         {
             _mapper = mapper;
             _testRepository = testRepository;
@@ -31,6 +33,8 @@ namespace OnlineTest.Services.Services
             _technologyRepository = technologyRepository;
             _testLinkRepository = testLinkRepository;
             _userRepository = userRepository;
+            _userRoleRepository = userRoleRepository;
+            _answerSheetRepository = answerSheetRepository;
         }
         #endregion
 
@@ -257,20 +261,35 @@ namespace OnlineTest.Services.Services
             }
             return response;
         }
-        
+
         public ResponseDTO AddTestLink(int adminId, int testId, string email)
         {
             var response = new ResponseDTO();
             try
             {
-                // check if user exists
+                // check if user exists, if not then create one
                 var userByEmail = _userRepository.GetUserByEmail(email);
+                int userId;
                 if (userByEmail == null)
                 {
-                    response.Status = 400;
-                    response.Message = "Not Created";
-                    response.Error = "User does not exist";
-                    return response;
+                    var user = new User
+                    {
+                        Name = email,
+                        Email = email,
+                        Password = "password",
+                        MobileNo = "0000000000",
+                        IsActive = true
+                    };
+                    userId = _userRepository.AddUser(user);
+                    _userRoleRepository.AddRole(new UserRole
+                    {
+                        UserId = userId,
+                        RoleId = 2
+                    });
+                }
+                else
+                {
+                    userId = userByEmail.Id;
                 }
 
                 // check if test exists
@@ -284,7 +303,7 @@ namespace OnlineTest.Services.Services
                 }
 
                 // check if link has already been created and not expired
-                var existFlag = _testLinkRepository.IsTestLinkExists(testId, userByEmail.Id);
+                var existFlag = _testLinkRepository.IsTestLinkExists(testId, userId);
                 if (existFlag)
                 {
                     response.Status = 400;
@@ -296,7 +315,7 @@ namespace OnlineTest.Services.Services
                 var testLink = new TestLink
                 {
                     TestId = testId,
-                    UserId = userByEmail.Id,
+                    UserId = userId,
                     Token = Guid.NewGuid(),
                     Attempts = 0,
                     ExpireOn = DateTime.UtcNow.AddDays(7),
@@ -325,7 +344,7 @@ namespace OnlineTest.Services.Services
             }
             return response;
         }
-        
+
         public ResponseDTO GetTestByLink(string token, string email)
         {
             var response = new ResponseDTO();
@@ -336,10 +355,11 @@ namespace OnlineTest.Services.Services
                 {
                     response.Status = 404;
                     response.Message = "Not Found";
-                    response.Error = "Test link does not exist or expired";
+                    response.Error = "Test link has expired";
                     return response;
                 }
-                var testId = testLink.TestId;
+                testLink.Attempts += 1;
+                // TODO: call method to increment attempts
                 var userId = testLink.UserId;
                 var user = _userRepository.GetUserById(userId);
                 if (email.ToLower() != user.Email.ToLower())
@@ -349,12 +369,45 @@ namespace OnlineTest.Services.Services
                     response.Error = "Email is incorrect";
                     return response;
                 }
+                var testId = testLink.TestId;
                 response = GetTestById(testId);
                 if (response.Status == 200)
                 {
                     testLink.AccessOn = DateTime.UtcNow;
                     _testLinkRepository.UpdateTestLink(testLink);
                 }
+            }
+            catch (Exception e)
+            {
+                response.Status = 500;
+                response.Message = "Internal Server Error";
+                response.Error = e.Message;
+            }
+            return response;
+        }
+
+        public ResponseDTO SubmitTest(AddAnswerSheetDTO answerSheet)
+        {
+            var response = new ResponseDTO();
+            try
+            {
+                answerSheet.CreatedOn = DateTime.UtcNow;
+                foreach (var question in answerSheet.Questions)
+                {
+                    foreach (var answer in question.Answers)
+                    {
+                        var sheet = new AnswerSheet
+                        {
+                            Token = answerSheet.Token,
+                            QuestionId = question.QuestionId,
+                            AnswerId = answer,
+                            CreatedOn = answerSheet.CreatedOn
+                        };
+                        _answerSheetRepository.AddAnswerSheet(sheet);
+                    }
+                }
+                response.Status = 200;
+                response.Message = "Ok";
             }
             catch (Exception e)
             {
