@@ -2,7 +2,7 @@
 {
     public class AddAnswerSheetDTO
     {
-        public string Token { get; set; }
+        public Guid Token { get; set; }
         public List<Question> Questions { get; set; }
         public class Question
         {

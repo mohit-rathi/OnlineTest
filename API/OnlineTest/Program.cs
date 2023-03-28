@@ -7,6 +7,7 @@ using OnlineTest.Models;
 using OnlineTest.Models.Interfaces;
 using OnlineTest.Models.Repository;
 using OnlineTest.Services.AutoMapperProfile;
+using OnlineTest.Services.Configuration;
 using OnlineTest.Services.Interfaces;
 using OnlineTest.Services.Services;
 
@@ -75,6 +76,8 @@ builder.Services.AddScoped<IAnswerRepository, AnswerRepository>();
 builder.Services.AddScoped<IQuestionAnswerMapRepository, QuestionAnswerMapRepository>();
 builder.Services.AddScoped<ITestLinkRepository, TestLinkRepository>();
 builder.Services.AddScoped<IAnswerSheetRepository, AnswerSheetRepository>();
+builder.Services.AddScoped<IMailService, MailService>();
+builder.Services.AddSingleton(builder.Configuration.GetSection("MailConfig").Get<MailConfiguration>());
 #endregion
 
 var app = builder.Build();

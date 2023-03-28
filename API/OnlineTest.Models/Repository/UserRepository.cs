@@ -20,7 +20,7 @@ namespace OnlineTest.Models.Repository
         {
             return _context.Users.Where(u => u.IsActive == true).ToList();
         }
-        
+
         public IEnumerable<User> GetUsersPaginated(int page, int limit)
         {
             return _context.Users.Where(u => u.IsActive == true).Skip((page - 1) * limit).Take(limit).ToList();

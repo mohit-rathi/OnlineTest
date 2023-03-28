@@ -21,10 +21,11 @@ namespace OnlineTest.Services.Services
         private readonly IUserRoleRepository _userRoleRepository;
         private readonly ITestLinkRepository _testLinkRepository;
         private readonly IAnswerSheetRepository _answerSheetRepository;
+        private readonly IMailService _mailService;
         #endregion
 
         #region Constructor
-        public TestService(IMapper mapper, ITestRepository testRepository, IQuestionRepository questionRepository, IAnswerRepository answerRepository, ITechnologyRepository technologyRepository, ITestLinkRepository testLinkRepository, IUserRepository userRepository, IUserRoleRepository userRoleRepository, IAnswerSheetRepository answerSheetRepository)
+        public TestService(IMapper mapper, ITestRepository testRepository, IQuestionRepository questionRepository, IAnswerRepository answerRepository, ITechnologyRepository technologyRepository, ITestLinkRepository testLinkRepository, IUserRepository userRepository, IUserRoleRepository userRoleRepository, IAnswerSheetRepository answerSheetRepository, IMailService mailService)
         {
             _mapper = mapper;
             _testRepository = testRepository;
@@ -35,6 +36,7 @@ namespace OnlineTest.Services.Services
             _userRepository = userRepository;
             _userRoleRepository = userRoleRepository;
             _answerSheetRepository = answerSheetRepository;
+            _mailService = mailService;
         }
         #endregion
 
@@ -312,6 +314,7 @@ namespace OnlineTest.Services.Services
                     return response;
                 }
 
+                // add test link to database
                 var testLink = new TestLink
                 {
                     TestId = testId,
@@ -323,7 +326,6 @@ namespace OnlineTest.Services.Services
                     CreatedBy = adminId,
                     CreatedOn = DateTime.UtcNow
                 };
-
                 var testLinkId = _testLinkRepository.AddTestLink(testLink);
                 if (testLinkId == 0)
                 {
@@ -332,6 +334,19 @@ namespace OnlineTest.Services.Services
                     response.Error = "Could not add test link";
                     return response;
                 }
+
+                // send email to candidate
+                var mail = new MailDTO
+                {
+                    To = email,
+                    Subject = "Link to begin test",
+                    Body = $"<p>Hi,</p><p>Here is your <a href=\"{testLink.Token}\" target=\"_blank\">link</a> to begin the test.</p><p>All the best!</p>"
+                };
+                _mailService.SendMail(mail);
+
+                // store record in email outbound table
+
+
                 response.Status = 201;
                 response.Message = "Created";
                 response.Data = testLinkId;
@@ -345,13 +360,13 @@ namespace OnlineTest.Services.Services
             return response;
         }
 
-        public ResponseDTO GetTestByLink(string token, string email)
+        public ResponseDTO GetTestByLink(Guid token, string email)
         {
             var response = new ResponseDTO();
             try
             {
                 // check if test link exists and has not expired
-                var testLink = _testLinkRepository.GetTestLink(Guid.Parse(token));
+                var testLink = _testLinkRepository.GetTestLink(token);
                 if (testLink == null)
                 {
                     response.Status = 404;
@@ -361,7 +376,7 @@ namespace OnlineTest.Services.Services
                 }
                 testLink.Attempts += 1;
                 _testLinkRepository.UpdateTestLink(testLink);
-                
+
                 // check if email is valid
                 var userId = testLink.UserId;
                 var user = _userRepository.GetUserById(userId);
@@ -404,15 +419,22 @@ namespace OnlineTest.Services.Services
             var response = new ResponseDTO();
             try
             {
-                // TODO: check if test has expired abcd
-
                 // check if test has already been submitted
-                var testLink = _testLinkRepository.GetTestLink(Guid.Parse(answerSheet.Token));
+                var testLink = _testLinkRepository.GetTestLink(answerSheet.Token);
                 if (testLink.SubmitOn != null)
                 {
                     response.Status = 400;
                     response.Message = "Bad Request";
                     response.Error = "Test has already been submitted";
+                    return response;
+                }
+
+                // check if test has expired
+                if (testLink.ExpireOn <= DateTime.UtcNow)
+                {
+                    response.Status = 400;
+                    response.Message = "Bad Request";
+                    response.Error = "Test link has expired";
                     return response;
                 }
 
@@ -423,7 +445,7 @@ namespace OnlineTest.Services.Services
                 {
                     var sheet = new AnswerSheet
                     {
-                        Token = Guid.Parse(answerSheet.Token),
+                        Token = answerSheet.Token,
                         QuestionId = question.QuestionId,
                         AnswerId = question.AnswerId,
                         CreatedOn = answerSheet.CreatedOn

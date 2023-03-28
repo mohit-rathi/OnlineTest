@@ -67,7 +67,7 @@ namespace OnlineTest.Controllers
         }
 
         [HttpGet("link")]
-        public IActionResult GetTestByLink(string token, string email)
+        public IActionResult GetTestByLink(Guid token, string email)
         {
             return Ok(_testService.GetTestByLink(token, email));
         }
