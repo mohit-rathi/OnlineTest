@@ -77,6 +77,7 @@ builder.Services.AddScoped<IQuestionAnswerMapRepository, QuestionAnswerMapReposi
 builder.Services.AddScoped<ITestLinkRepository, TestLinkRepository>();
 builder.Services.AddScoped<IAnswerSheetRepository, AnswerSheetRepository>();
 builder.Services.AddScoped<IMailService, MailService>();
+builder.Services.AddScoped<IMailOutboundRepository, MailOutboundRepository>();
 builder.Services.AddSingleton(builder.Configuration.GetSection("MailConfig").Get<MailConfiguration>());
 #endregion
 

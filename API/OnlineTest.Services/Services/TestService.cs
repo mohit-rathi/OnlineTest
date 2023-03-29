@@ -22,10 +22,11 @@ namespace OnlineTest.Services.Services
         private readonly ITestLinkRepository _testLinkRepository;
         private readonly IAnswerSheetRepository _answerSheetRepository;
         private readonly IMailService _mailService;
+        private readonly IMailOutboundRepository _mailOutboundRepository;
         #endregion
 
         #region Constructor
-        public TestService(IMapper mapper, ITestRepository testRepository, IQuestionRepository questionRepository, IAnswerRepository answerRepository, ITechnologyRepository technologyRepository, ITestLinkRepository testLinkRepository, IUserRepository userRepository, IUserRoleRepository userRoleRepository, IAnswerSheetRepository answerSheetRepository, IMailService mailService)
+        public TestService(IMapper mapper, ITestRepository testRepository, IQuestionRepository questionRepository, IAnswerRepository answerRepository, ITechnologyRepository technologyRepository, ITestLinkRepository testLinkRepository, IUserRepository userRepository, IUserRoleRepository userRoleRepository, IAnswerSheetRepository answerSheetRepository, IMailService mailService, IMailOutboundRepository mailOutboundRepository)
         {
             _mapper = mapper;
             _testRepository = testRepository;
@@ -37,6 +38,7 @@ namespace OnlineTest.Services.Services
             _userRoleRepository = userRoleRepository;
             _answerSheetRepository = answerSheetRepository;
             _mailService = mailService;
+            _mailOutboundRepository = mailOutboundRepository;
         }
         #endregion
 
@@ -345,7 +347,15 @@ namespace OnlineTest.Services.Services
                 _mailService.SendMail(mail);
 
                 // store record in email outbound table
-
+                var mailOutbound = new MailOutbound
+                {
+                    To = mail.To,
+                    Body = mail.Body,
+                    TestLinkId = testLinkId,
+                    CreatedBy = adminId,
+                    CreatedOn = DateTime.UtcNow
+                };
+                _mailOutboundRepository.AddMailOutbound(mailOutbound);
 
                 response.Status = 201;
                 response.Message = "Created";
