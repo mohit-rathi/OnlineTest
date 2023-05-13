@@ -1,33 +1,28 @@
 ﻿using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using OnlineTest.Services.DTO;
-using OnlineTest.Services.DTO.AddDTO;
-using OnlineTest.Services.DTO.UpdateDTO;
 using OnlineTest.Services.Interfaces;
 
 namespace OnlineTest.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     [ApiController]
     public class AuthController : ControllerBase
     {
         #region Fields
         private readonly IUserService _userService;
-        private readonly IRTokenService _rTokenService;
         private readonly IUserRoleService _userRoleService;
         private readonly IConfiguration _configuration;
         #endregion
 
         #region Constructor
-        public AuthController(IUserService userService, IRTokenService rTokenService, IUserRoleService userRoleService, IConfiguration configuration)
+        public AuthController(IUserService userService, IUserRoleService userRoleService, IConfiguration configuration)
         {
             _userService = userService;
-            _rTokenService = rTokenService;
             _userRoleService = userRoleService;
             _configuration = configuration.GetSection("JWTConfig");
         }
@@ -41,93 +36,19 @@ namespace OnlineTest.Controllers
             var result = _userService.IsUserExists(user);
             if (result == null)
             {
-                return Unauthorized(new ResponseDTO
+                return Ok(new ResponseDTO
                 {
                     Status = 401,
                     Message = "Unauthorized",
-                    Error = "Incorrect email or password"
+                    Error = "Incorrect email or password."
                 });
             }
 
-            // create and add refresh token in database
-            var refreshToken = Guid.NewGuid().ToString().Replace("-", "");
-            var rToken = new AddRTokenDTO
-            {
-                RefreshToken = refreshToken,
-                IsStop = false,
-                CreatedOn = DateTime.UtcNow,
-                UserId = result.Id
-            };
-            if (!_rTokenService.AddRefreshToken(rToken))
-            {
-                return Unauthorized(new ResponseDTO
-                {
-                    Status = 401,
-                    Message = "Unauthorized",
-                    Error = "Failed to add refresh token"
-                });
-            }
-
-            // create access token and send response
-            var response = GetJwt(result.Id, refreshToken);
+            var response = GetJwt(result.Id, result.Email);
             return Ok(response);
         }
 
-        [HttpPost("refresh")]
-        public IActionResult RefreshToken(RefreshDTO user)
-        {
-            // check if refresh token exists or expired
-            var rTokenOld = _rTokenService.GetRefreshToken(user);
-            if (rTokenOld == null)
-            {
-                return Unauthorized(new ResponseDTO
-                {
-                    Status = 401,
-                    Message = "Unauthorized",
-                    Error = "Refresh token not found"
-                });
-            }
-            if (rTokenOld.IsStop == true)
-            {
-                return Unauthorized(new ResponseDTO
-                {
-                    Status = 401,
-                    Message = "Unauthorized",
-                    Error = "Refresh token has expired"
-                });
-            }
-
-            // expire old refresh token and create new refresh token
-            var updateFlag = _rTokenService.ExpireRefreshToken(new UpdateRTokenDTO
-            {
-                Id = rTokenOld.Id,
-                IsStop = true
-            });
-            var refreshToken = Guid.NewGuid().ToString().Replace("-", "");
-            var rTokenNew = new AddRTokenDTO
-            {
-                RefreshToken = refreshToken,
-                IsStop = false,
-                CreatedOn = DateTime.UtcNow,
-                UserId = rTokenOld.UserId
-            };
-            var addFlag = _rTokenService.AddRefreshToken(rTokenNew);
-            if (!updateFlag || !addFlag)
-            {
-                return Unauthorized(new ResponseDTO
-                {
-                    Status = 401,
-                    Message = "Unauthorized",
-                    Error = "Could not refresh token"
-                });
-            }
-
-            // create access token and send response
-            var response = GetJwt(rTokenNew.UserId, refreshToken);
-            return Ok(response);
-        }
-
-        private object GetJwt(int userId, string refreshToken)
+        private object GetJwt(int userId, string email)
         {
             var now = DateTime.UtcNow;
 
@@ -135,7 +56,8 @@ namespace OnlineTest.Controllers
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Iat, now.ToString(CultureInfo.InvariantCulture), ClaimValueTypes.Integer64),
-                new Claim("Id", Convert.ToString(userId))
+                new Claim("Id", Convert.ToString(userId)),
+                new Claim("Email", email)
             };
             var roles = _userRoleService.GetRoles(userId);
             foreach (var role in roles)
@@ -165,10 +87,14 @@ namespace OnlineTest.Controllers
             // create and return response
             var response = new
             {
-                id = userId,
-                access_token = tokenString,
-                refresh_token = refreshToken,
-                expires_in = (int)TimeSpan.FromHours(24).TotalSeconds
+                Status = 200,
+                Message = "Authorized",
+                Data = new {
+                    Id = userId,
+                    Email = email,
+                    Token = tokenString,
+                    ExpiresIn = (int)TimeSpan.FromHours(24).TotalSeconds
+                }
             };
             return response;
         }

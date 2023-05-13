@@ -1,0 +1,27 @@
+form {
+	min-width: 350px;
+}
+
+input.ng-touched.ng-invalid {
+	border: 1px solid #dc3545;
+}
+
+input.ng-valid {
+	border: 1px solid #198754;
+}
+
+span.error {
+	font-size: 14px;
+}
+
+.btn-login {
+	width: 92px;
+}
+
+.btn-dismiss-alert {
+	background-color: transparent;
+	border: none;
+	color: #555;
+	font-size: 18px;
+	cursor: pointer;
+}

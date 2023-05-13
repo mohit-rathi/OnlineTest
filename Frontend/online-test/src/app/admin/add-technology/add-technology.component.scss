@@ -1,0 +1,19 @@
+form {
+	max-width: 768px;
+}
+
+input.ng-touched.ng-invalid {
+	border: 1px solid #dc3545;
+}
+
+input.ng-valid {
+	border: 1px solid #198754;
+}
+
+span.error {
+	font-size: 14px;
+}
+
+button {
+	width: 150px;
+}

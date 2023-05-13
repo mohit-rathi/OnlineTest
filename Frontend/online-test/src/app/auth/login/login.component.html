@@ -1,0 +1,71 @@
+<form
+  class="card p-4"
+  #loginForm="ngForm"
+  (ngSubmit)="login(loginForm.value)"
+  autocomplete="off"
+>
+  <div
+    *ngIf="loginError"
+    class="alert alert-danger p-3 d-flex justify-content-between align-items-baseline"
+    role="alert"
+  >
+    <div class="d-flex align-items-baseline">
+      <i class="me-2 fa-solid fa-triangle-exclamation"></i>
+      {{ loginError }}
+    </div>
+    <button type="button" class="btn-dismiss-alert" (click)="dismissAlert()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="email">Email</label>
+    <input
+      class="form-control"
+      type="email"
+      placeholder="name@example.com"
+      id="email"
+      name="email"
+      ngModel
+      #email="ngModel"
+      required
+      [pattern]="emailRegex"
+    />
+    <div class="error mt-2 text-danger" *ngIf="email.invalid && email.touched">
+      <span *ngIf="email.errors?.['required']">Email is required.</span>
+      <span *ngIf="email.errors?.['pattern']">
+        Please enter a valid email address.
+      </span>
+    </div>
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="password">Password</label>
+    <input
+      class="form-control"
+      type="password"
+      placeholder="Enter your password"
+      id="password"
+      name="password"
+      ngModel
+      #password="ngModel"
+      required
+    />
+    <div
+      class="error mt-2 text-danger"
+      *ngIf="password.invalid && password.touched"
+    >
+      <span *ngIf="password.errors?.['required']">Password is required.</span>
+    </div>
+  </div>
+  <div class="d-flex justify-content-between align-items-center">
+    <a class="text-decoration-none" routerLink="/auth/forgot-password">
+      Forgot password?
+    </a>
+    <button
+      class="btn btn-primary btn-login"
+      type="submit"
+      [disabled]="loginForm.invalid"
+    >
+      Login
+    </button>
+  </div>
+</form>

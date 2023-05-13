@@ -1,0 +1,32 @@
+<section class="p-4 position-relative">
+  <button
+    *ngIf="!isAdd"
+    class="btn btn-primary btn-add"
+    type="button"
+    (click)="toggleAddTechnology()"
+  >
+    <i class="fa-solid fa-plus"></i>
+  </button>
+  <app-add-technology
+    *ngIf="isAdd"
+    (technologyCreate)="addTechnology($event)"
+    (hideAddTechnologyEvent)="toggleAddTechnology()"
+  />
+  <p class="mx-auto py-4 text-center" *ngIf="isFetching">
+    Fetching all technologies...
+  </p>
+  <p
+    class="mx-auto py-4 text-center"
+    *ngIf="technologyList.length === 0 && !isFetching"
+  >
+    No technologies found.
+  </p>
+  <ul
+    class="mx-auto row gy-3 list-unstyled"
+    *ngIf="technologyList.length > 0 && !isFetching"
+  >
+    <li class="col-12 p-0" *ngFor="let technology of technologyList">
+      <app-technology-list-item [technology]="technology" />
+    </li>
+  </ul>
+</section>
