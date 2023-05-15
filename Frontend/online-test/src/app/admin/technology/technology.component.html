@@ -1,11 +1,11 @@
 <section class="p-4 position-relative">
   <button
     *ngIf="!isAdd"
-    class="btn btn-primary btn-add"
+    class="mb-4 btn-add"
     type="button"
     (click)="toggleAddTechnology()"
   >
-    <i class="fa-solid fa-plus"></i>
+    <i class="fa-solid fa-plus me-2"></i>Add Technology
   </button>
   <app-add-technology
     *ngIf="isAdd"
