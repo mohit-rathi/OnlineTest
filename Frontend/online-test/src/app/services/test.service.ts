@@ -8,15 +8,20 @@ import { environment as env } from 'src/environments/environment.development';
 @Injectable({
   providedIn: 'root',
 })
-export class TechnologyService {
-  private _url: string = env.apiBaseUrl + 'technologies/';
+export class TestService {
+  private _url = env.apiBaseUrl + 'tests/';
+
   constructor(private _http: HttpClient) {}
 
-  public getTechnologies(): Observable<any> {
-    return this._http.get(this._url);
+  public getTests(id: string): Observable<any> {
+    return this._http.get(this._url, {
+      params: {
+        id: id,
+      },
+    });
   }
 
-  public addTechnology(technology: { techName: string }): Observable<any> {
-    return this._http.post(this._url, technology);
+  public addTest(test: any): Observable<any> {
+    return this._http.post(this._url, test);
   }
 }

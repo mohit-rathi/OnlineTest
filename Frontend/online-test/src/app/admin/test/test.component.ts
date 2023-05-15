@@ -1,33 +1,51 @@
-import { Component, OnInit } from '@angular/core';
-import { environment } from 'src/environments/environment.development';
-import { HttpClient } from '@angular/common/http';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 
 // interfaces
 import { ITest } from '../interfaces/test.interface';
+
+// services
+import { TestService } from 'src/app/services/test.service';
+import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-test',
   templateUrl: './test.component.html',
   styleUrls: ['./test.component.scss'],
 })
-export class TestComponent implements OnInit {
-  private apiBaseUrl: string = environment.apiBaseUrl;
+export class TestComponent implements OnInit, OnDestroy {
+  public testId!: string;
   public testList: ITest[] = [];
   public isAdd: boolean = false;
   public isFetching: boolean = false;
+  public paramsSubscription!: Subscription;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private _testService: TestService,
+    private _activatedRoute: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
-    this.fetchTests();
+    this.paramsSubscription = this._activatedRoute.params.subscribe({
+      next: (params) => {
+        this.testId = params['testId'];
+        this.fetchTests(this.testId);
+      },
+    });
   }
 
-  public fetchTests(): void {
+  ngOnDestroy(): void {
+    this.paramsSubscription.unsubscribe();
+  }
+
+  public fetchTests(id: string): void {
     this.isFetching = true;
-    this.http.get(this.apiBaseUrl + 'tests').subscribe({
+    this._testService.getTests(id).subscribe({
       next: (response: any) => {
         this.isFetching = false;
-        this.testList = response.data;
+        console.log(response.data);
+
+        // this.testList = response.data;
       },
       error: (error) => {
         this.isFetching = false;
@@ -37,10 +55,10 @@ export class TestComponent implements OnInit {
   }
 
   public addTest(test: { testName: string }): void {
-    this.http.post(this.apiBaseUrl + 'technologies', test).subscribe({
+    this._testService.addTest(test).subscribe({
       next: (response: any) => {
         if (response.status === 201) {
-          this.fetchTests();
+          // this.fetchTests();
         }
       },
       error: (error) => {

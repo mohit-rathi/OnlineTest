@@ -26,7 +26,7 @@ export const routes: Routes = [
         component: TechnologyComponent,
       },
       {
-        path: 'technologies/:id/tests',
+        path: 'technologies/:testId/tests',
         component: TestComponent,
       },
     ],
