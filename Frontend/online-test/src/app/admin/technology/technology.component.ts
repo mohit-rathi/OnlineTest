@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { environment } from 'src/environments/environment.development';
-import { HttpClient } from '@angular/common/http';
 
 // interfaces
 import { ITechnology } from '../interfaces/technology.interface';
+import { TechnologyService } from 'src/app/services/technology.service';
 
 @Component({
   selector: 'app-technology',
@@ -11,12 +10,11 @@ import { ITechnology } from '../interfaces/technology.interface';
   styleUrls: ['./technology.component.scss'],
 })
 export class TechnologyComponent implements OnInit {
-  private apiBaseUrl: string = environment.apiBaseUrl;
   public technologyList: ITechnology[] = [];
   public isAdd: boolean = false;
   public isFetching: boolean = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private _technologyService: TechnologyService) {}
 
   ngOnInit(): void {
     this.fetchTechnologies();
@@ -24,7 +22,7 @@ export class TechnologyComponent implements OnInit {
 
   public fetchTechnologies(): void {
     this.isFetching = true;
-    this.http.get(this.apiBaseUrl + 'technologies').subscribe({
+    this._technologyService.getTechnologies().subscribe({
       next: (response: any) => {
         this.isFetching = false;
         this.technologyList = response.data;
@@ -37,7 +35,7 @@ export class TechnologyComponent implements OnInit {
   }
 
   public addTechnology(technology: { techName: string }): void {
-    this.http.post(this.apiBaseUrl + 'technologies', technology).subscribe({
+    this._technologyService.addTechnology(technology).subscribe({
       next: (response: any) => {
         if (response.status === 201) {
           this.fetchTechnologies();

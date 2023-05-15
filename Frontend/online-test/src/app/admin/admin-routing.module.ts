@@ -8,7 +8,7 @@ import { TechnologyComponent } from './technology/technology.component';
 import { TestComponent } from './test/test.component';
 
 // auth guard
-import { AdminAuthGuard } from './admin-auth.guard';
+import { AdminAuthGuard } from './guards/admin-auth.guard';
 
 export const routes: Routes = [
   {

@@ -9,7 +9,7 @@ namespace OnlineTest.Controllers
 {
     [Route("api/tests")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class TestController : ControllerBase
     {
         #region Fields
