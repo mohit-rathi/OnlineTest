@@ -16,4 +16,8 @@ export class AuthService {
   public login(data: { email: string; password: string }): Observable<any> {
     return this._http.post(this._baseUrl + 'login', data);
   }
+
+  public logout(): void {
+    localStorage.removeItem('auth');
+  }
 }
