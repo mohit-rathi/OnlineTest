@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OnlineTest.Services.DTO.AddDTO;
 using OnlineTest.Services.DTO.UpdateDTO;
@@ -6,7 +7,7 @@ using OnlineTest.Services.Interfaces;
 
 namespace OnlineTest.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/users")]
     [ApiController]
     [Authorize]
     public class UserController : ControllerBase
@@ -39,6 +40,12 @@ namespace OnlineTest.Controllers
         public IActionResult GetUserById(int id)
         {
             return Ok(_userService.GetUserById(id));
+        }
+
+        [HttpGet("profile")]
+        public IActionResult GetUserProfile()
+        {
+            return Ok(_userService.GetUserById(Convert.ToInt32(User.FindFirstValue("Id"))));
         }
 
         [HttpPost]

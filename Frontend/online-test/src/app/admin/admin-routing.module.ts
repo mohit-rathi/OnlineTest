@@ -6,6 +6,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { TechnologyComponent } from './technology/technology.component';
 import { TestComponent } from './test/test.component';
+import { ProfileComponent } from './profile/profile.component';
 
 // auth guard
 import { AdminAuthGuard } from './guards/admin-auth.guard';
@@ -28,6 +29,10 @@ export const routes: Routes = [
       {
         path: 'technologies/:testId/tests',
         component: TestComponent,
+      },
+      {
+        path: 'profile',
+        component: ProfileComponent,
       },
     ],
   },

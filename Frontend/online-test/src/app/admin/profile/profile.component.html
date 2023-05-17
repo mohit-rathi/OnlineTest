@@ -1,0 +1,9 @@
+<div
+  class="p-4 d-flex flex-column justify-content-center align-items-center"
+  *ngIf="isProfileFetched"
+>
+  <p>{{ userProfile.name }}</p>
+  <p>{{ userProfile.mobileNo }}</p>
+  <p>{{ userProfile.email }}</p>
+  <button class="btn btn-danger" (click)="logout()">Logout</button>
+</div>

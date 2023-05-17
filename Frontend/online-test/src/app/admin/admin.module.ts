@@ -14,6 +14,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { TechnologyComponent } from './technology/technology.component';
 import { TestComponent } from './test/test.component';
 import { AddTestComponent } from './add-test/add-test.component';
+import { ProfileComponent } from './profile/profile.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { AddTestComponent } from './add-test/add-test.component';
     TechnologyComponent,
     TestComponent,
     AddTestComponent,
+    ProfileComponent,
   ],
   imports: [
     CommonModule,
