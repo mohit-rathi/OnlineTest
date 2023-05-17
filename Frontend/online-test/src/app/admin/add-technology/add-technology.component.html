@@ -1,7 +1,6 @@
 <form
   class="card mx-auto mb-4 p-3"
-  #technologyForm="ngForm"
-  (ngSubmit)="addTechnology(technologyForm)"
+  [formGroup]="technologyForm"
   autocomplete="off"
 >
   <div class="mb-3">
@@ -12,33 +11,42 @@
       placeholder="Enter name of the technology"
       id="techName"
       name="techName"
-      ngModel
-      #technologyName="ngModel"
+      formControlName="techName"
       required
     />
     <div
       class="error mt-2 text-danger"
-      *ngIf="technologyName.invalid && technologyName.touched"
+      *ngIf="
+        technologyForm.get('techName')?.invalid &&
+        technologyForm.get('techName')?.touched
+      "
     >
-      <span *ngIf="technologyName.errors?.['required']">
+      <span *ngIf="(technologyForm.get('techName')?.errors)!['required']">
         Technology name is required.
       </span>
     </div>
   </div>
   <div class="d-flex justify-content-end">
     <button
-      class="btn btn-danger me-3"
-      type="reset"
-      (click)="hideAddTechnology()"
-    >
-      Cancel
-    </button>
-    <button
-      class="btn btn-primary"
+      class="btn btn-primary me-3"
       type="submit"
       [disabled]="technologyForm.invalid"
+      (click)="onAddTechnology(technologyForm.value)"
+      *ngIf="!updateId"
     >
       Add Technology
+    </button>
+    <button
+      class="btn btn-primary me-3"
+      type="submit"
+      [disabled]="technologyForm.invalid"
+      (click)="onUpdateTechnology(technologyForm.value)"
+      *ngIf="updateId"
+    >
+      Update Technology
+    </button>
+    <button class="btn btn-danger" type="reset" (click)="onHideAddTechnology()">
+      Cancel
     </button>
   </div>
 </form>

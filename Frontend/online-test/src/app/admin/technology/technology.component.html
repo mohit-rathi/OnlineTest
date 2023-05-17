@@ -3,14 +3,16 @@
     *ngIf="!isAdd"
     class="mb-4 btn-add"
     type="button"
-    (click)="toggleAddTechnology()"
+    (click)="showAddTechnology()"
   >
     <i class="fa-solid fa-plus me-2"></i>Add Technology
   </button>
   <app-add-technology
     *ngIf="isAdd"
+    [updateTech]="updateTech"
     (technologyCreate)="addTechnology($event)"
-    (hideAddTechnologyEvent)="toggleAddTechnology()"
+    (technologyUpdate)="updateTechnology($event)"
+    (hideAddTechnology)="hideAddTechnology()"
   />
   <p class="mx-auto py-4 text-center" *ngIf="isFetching">
     Fetching all technologies...
@@ -26,7 +28,11 @@
     *ngIf="technologyList.length > 0 && !isFetching"
   >
     <li class="col-12 p-0" *ngFor="let technology of technologyList">
-      <app-technology-list-item [technology]="technology" />
+      <app-technology-list-item
+        [technology]="technology"
+        (update)="onUpdate($event)"
+        (delete)="deleteTechnology($event)"
+      />
     </li>
   </ul>
 </section>

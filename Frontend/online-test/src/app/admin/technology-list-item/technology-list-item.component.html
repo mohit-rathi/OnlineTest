@@ -8,10 +8,10 @@
     <button class="btn btn-primary" (click)="displayTests(technology.id)">
       <i class="fa-solid fa-eye"></i>
     </button>
-    <button class="btn btn-success">
+    <button class="btn btn-success" (click)="onUpdate(technology)">
       <i class="fa-solid fa-pen"></i>
     </button>
-    <button class="btn btn-danger">
+    <button class="btn btn-danger" (click)="onDelete(technology.id)">
       <i class="fa-solid fa-trash"></i>
     </button>
   </div>

@@ -2,8 +2,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminRoutingModule } from './admin-routing.module';
-import { FormsModule } from '@angular/forms';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 // components
 import { DashboardComponent } from './dashboard/dashboard.component';
@@ -14,9 +14,6 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { TechnologyComponent } from './technology/technology.component';
 import { TestComponent } from './test/test.component';
 import { AddTestComponent } from './add-test/add-test.component';
-
-// interceptors
-import { TokenInterceptor } from '../interceptors/token.interceptor';
 
 @NgModule({
   declarations: [
@@ -29,7 +26,13 @@ import { TokenInterceptor } from '../interceptors/token.interceptor';
     TestComponent,
     AddTestComponent,
   ],
-  imports: [CommonModule, AdminRoutingModule, FormsModule, HttpClientModule],
+  imports: [
+    CommonModule,
+    AdminRoutingModule,
+    FormsModule,
+    ReactiveFormsModule,
+    HttpClientModule,
+  ],
   exports: [],
 })
 export class AdminModule {}

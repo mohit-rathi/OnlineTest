@@ -13,6 +13,7 @@ export class TechnologyComponent implements OnInit {
   public technologyList: ITechnology[] = [];
   public isAdd: boolean = false;
   public isFetching: boolean = false;
+  public updateTech: { id: number; techName: string } | undefined;
 
   constructor(private _technologyService: TechnologyService) {}
 
@@ -47,7 +48,45 @@ export class TechnologyComponent implements OnInit {
     });
   }
 
-  public toggleAddTechnology() {
-    this.isAdd = !this.isAdd;
+  public updateTechnology(technology: { id: number; techName: string }): void {
+    this._technologyService.updateTechnology(technology).subscribe({
+      next: (response: any) => {
+        if (response.status === 204) {
+          this.updateTech = undefined;
+          this.hideAddTechnology();
+          this.fetchTechnologies();
+        }
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
+  }
+
+  public deleteTechnology(id: number): void {
+    this._technologyService.deleteTechnology(id).subscribe({
+      next: (response: any) => {
+        if (response.status === 204) {
+          this.fetchTechnologies();
+        }
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
+  }
+
+  public showAddTechnology() {
+    this.isAdd = true;
+  }
+
+  public hideAddTechnology() {
+    this.isAdd = false;
+    this.updateTech = undefined;
+  }
+
+  public onUpdate(technology: ITechnology) {
+    this.showAddTechnology();
+    this.updateTech = technology;
   }
 }

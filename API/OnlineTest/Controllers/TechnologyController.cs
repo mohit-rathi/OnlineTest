@@ -9,7 +9,7 @@ namespace OnlineTest.Controllers
 {
     [Route("api/technologies")]
     [ApiController]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class TechnologyController : ControllerBase
     {
         #region Fields

@@ -1,6 +1,5 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { environment } from 'src/environments/environment.development';
 
 // interfaces
 import { ITechnology } from '../interfaces/technology.interface';
@@ -12,12 +11,20 @@ import { ITechnology } from '../interfaces/technology.interface';
 })
 export class TechnologyListItemComponent {
   @Input() technology!: ITechnology;
-  private apiBaseUrl: string = environment.apiBaseUrl;
+  @Output() update = new EventEmitter<{ id: number; techName: string }>();
+  @Output() delete = new EventEmitter<number>();
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute) {}
 
   public displayTests(id: number) {
-    // this.router.navigateByUrl('dashboard/technologies/' + id + '/tests');
     this.router.navigate([id, 'tests'], { relativeTo: this.activatedRoute });
+  }
+
+  public onUpdate(technology: { id: number; techName: string }) {
+    this.update.emit(technology);
+  }
+
+  public onDelete(id: number) {
+    this.delete.emit(id);
   }
 }

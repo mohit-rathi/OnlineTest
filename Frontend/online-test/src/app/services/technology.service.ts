@@ -19,4 +19,15 @@ export class TechnologyService {
   public addTechnology(technology: { techName: string }): Observable<any> {
     return this._http.post(this._url, technology);
   }
+
+  public updateTechnology(technology: {
+    id: number;
+    techName: string;
+  }): Observable<any> {
+    return this._http.put(this._url, technology);
+  }
+
+  public deleteTechnology(id: number): Observable<any> {
+    return this._http.delete(this._url, { params: { id: id } });
+  }
 }
