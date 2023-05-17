@@ -31,7 +31,8 @@ export class LoginComponent {
         }
       },
       error: (error) => {
-        console.log(error);
+        // console.log(error);
+        this.loginError = 'Some error occurred.';
       },
     });
   }

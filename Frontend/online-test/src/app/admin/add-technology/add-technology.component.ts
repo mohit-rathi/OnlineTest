@@ -32,7 +32,7 @@ export class AddTechnologyComponent {
   @Output() hideAddTechnology = new EventEmitter();
 
   public onAddTechnology(data: any): void {
-    this.technologyCreate.emit(data.value);
+    this.technologyCreate.emit({ techName: data.techName });
   }
 
   public onUpdateTechnology(data: any): void {

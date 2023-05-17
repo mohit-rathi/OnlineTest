@@ -14,6 +14,8 @@ export class TechnologyComponent implements OnInit {
   public isAdd: boolean = false;
   public isFetching: boolean = false;
   public updateTech: { id: number; techName: string } | undefined;
+  public error: string | undefined;
+  public success: string | undefined;
 
   constructor(private _technologyService: TechnologyService) {}
 
@@ -30,7 +32,8 @@ export class TechnologyComponent implements OnInit {
       },
       error: (error) => {
         this.isFetching = false;
-        console.log(error);
+        // console.log(error);
+        this.error = 'Some error occurred, could not fetch technologies.';
       },
     });
   }
@@ -40,10 +43,17 @@ export class TechnologyComponent implements OnInit {
       next: (response: any) => {
         if (response.status === 201) {
           this.fetchTechnologies();
+          this.success = 'Technology added successfuly.';
+          this.error = undefined;
+        } else if (response.status === 400) {
+          this.error = response.error;
+          this.success = undefined;
         }
       },
       error: (error) => {
-        console.log(error);
+        // console.log(error);
+        this.error = 'Some error occurred, could not add technology.';
+        this.success = undefined;
       },
     });
   }
@@ -55,10 +65,17 @@ export class TechnologyComponent implements OnInit {
           this.updateTech = undefined;
           this.hideAddTechnology();
           this.fetchTechnologies();
+          this.success = 'Technology updated successfuly.';
+          this.error = undefined;
+        } else if (response.status === 400) {
+          this.error = response.error;
+          this.success = undefined;
         }
       },
       error: (error) => {
-        console.log(error);
+        // console.log(error);
+        this.error = 'Some error occurred, could not update technology.';
+        this.success = undefined;
       },
     });
   }
@@ -68,10 +85,17 @@ export class TechnologyComponent implements OnInit {
       next: (response: any) => {
         if (response.status === 204) {
           this.fetchTechnologies();
+          this.success = 'Technology deleted successfuly.';
+          this.error = undefined;
+        } else if (response.status === 400) {
+          this.error = response.error;
+          this.success = undefined;
         }
       },
       error: (error) => {
-        console.log(error);
+        // console.log(error);
+        this.error = 'Some error occurred, could not delete technology.';
+        this.success = undefined;
       },
     });
   }
@@ -88,5 +112,10 @@ export class TechnologyComponent implements OnInit {
   public onUpdate(technology: ITechnology) {
     this.showAddTechnology();
     this.updateTech = technology;
+  }
+
+  public dismissAlert() {
+    this.error = undefined;
+    this.success = undefined;
   }
 }

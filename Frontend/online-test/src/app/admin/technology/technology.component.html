@@ -1,4 +1,33 @@
 <section class="p-4 position-relative">
+  <!-- Success Alert -->
+  <div
+    *ngIf="success"
+    class="alert alert-success mx-auto mb-4 p-3 d-flex justify-content-between align-items-baseline"
+    role="alert"
+  >
+    <div class="d-flex align-items-baseline">
+      <i class="me-2 fa-solid fa-circle-check"></i>
+      {{ success }}
+    </div>
+    <button type="button" class="btn-dismiss-alert" (click)="dismissAlert()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+  <!-- Error Alert -->
+  <div
+    *ngIf="error"
+    class="alert alert-danger mx-auto mb-4 p-3 d-flex justify-content-between align-items-baseline"
+    role="alert"
+  >
+    <div class="d-flex align-items-baseline">
+      <i class="me-2 fa-solid fa-triangle-exclamation"></i>
+      {{ error }}
+    </div>
+    <button type="button" class="btn-dismiss-alert" (click)="dismissAlert()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+
   <button
     *ngIf="!isAdd"
     class="mb-4 btn-add"

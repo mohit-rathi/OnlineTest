@@ -127,7 +127,7 @@ namespace OnlineTest.Services.Services
                 {
                     response.Status = 400;
                     response.Message = "Not Created";
-                    response.Error = "Technology already exists";
+                    response.Error = "Technology already exists.";
                     return response;
                 }
                 technology.IsActive = true;
@@ -138,7 +138,7 @@ namespace OnlineTest.Services.Services
                 {
                     response.Status = 400;
                     response.Message = "Not Created";
-                    response.Error = "Could not add technology";
+                    response.Error = "Could not add technology.";
                     return response;
                 }
                 response.Status = 201;
@@ -164,7 +164,7 @@ namespace OnlineTest.Services.Services
                 {
                     response.Status = 400;
                     response.Message = "Not Updated";
-                    response.Error = "Technology does not exist";
+                    response.Error = "Technology does not exist.";
                     return response;
                 }
                 var technologyByName = _technologyRepository.GetTechnologyByName(technology.TechName);
@@ -172,7 +172,7 @@ namespace OnlineTest.Services.Services
                 {
                     response.Status = 400;
                     response.Message = "Not Updated";
-                    response.Error = "Technology already exists";
+                    response.Error = "Technology already exists.";
                     return response;
                 }
                 technology.ModifiedBy = userId;
@@ -187,7 +187,7 @@ namespace OnlineTest.Services.Services
                 {
                     response.Status = 400;
                     response.Message = "Not Updated";
-                    response.Error = "Could not update technology";
+                    response.Error = "Could not update technology.";
                 }
             }
             catch (Exception e)
@@ -209,7 +209,7 @@ namespace OnlineTest.Services.Services
                 {
                     response.Status = 400;
                     response.Message = "Not Deleted";
-                    response.Error = "Technology does not exist";
+                    response.Error = "Technology does not exist.";
                     return response;
                 }
                 technologyById.IsActive = false;
@@ -223,7 +223,7 @@ namespace OnlineTest.Services.Services
                 {
                     response.Status = 400;
                     response.Message = "Not Deleted";
-                    response.Error = "Could not delete technology";
+                    response.Error = "Could not delete technology.";
                 }
             }
             catch (Exception e)
